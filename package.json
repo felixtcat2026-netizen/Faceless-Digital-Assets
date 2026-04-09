@@ -1,0 +1,26 @@
+{
+  "name": "faceless-digital-assets",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Monorepo baseline for Faceless Digital Assets",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "packages/config/*"
+  ],
+  "scripts": {
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "ci": "npm run lint && npm run typecheck && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.1",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "eslint": "^8.57.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
