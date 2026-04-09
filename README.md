@@ -28,6 +28,12 @@ Monorepo for storefront MVP implementation, shared packages, and local dev workf
 - `/product/:slug` - product detail skeleton
 - `/lead-magnet` - lead capture skeleton
 
+## API Routes (Vertical Slice)
+
+- `POST /api/stripe/checkout-session` - validates product/email and creates Stripe Checkout Session
+- `POST /api/stripe/webhook` - verifies Stripe signature and stores placeholder order records
+- `POST /api/lead-magnet` - validates and stores placeholder lead records
+
 ## Local Integrations
 
 - Stripe webhook listener:

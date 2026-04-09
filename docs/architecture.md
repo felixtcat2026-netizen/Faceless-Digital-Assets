@@ -16,6 +16,14 @@ The current storefront shell includes:
 - `/product/:slug`: product detail skeleton
 - `/lead-magnet`: lead capture skeleton
 
+The web app now also mounts local API middleware for MVP commerce flow:
+
+- `POST /api/stripe/checkout-session`
+- `POST /api/stripe/webhook`
+- `POST /api/lead-magnet`
+
+Webhook and lead/order persistence are local placeholders written to newline-delimited JSON files in `.local-data/`.
+
 ## Quality Gates
 
 The root `ci` script and GitHub Action run:

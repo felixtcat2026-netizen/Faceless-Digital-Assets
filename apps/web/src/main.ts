@@ -1,3 +1,5 @@
+import { findProductBySlug, PRODUCT_CATALOG } from './catalog';
+
 export type StorefrontRoute =
   | { kind: 'home' }
   | { kind: 'catalog' }
@@ -6,12 +8,6 @@ export type StorefrontRoute =
   | { kind: 'notFound'; pathname: string };
 
 const BRAND_NAME = 'Faceless Digital Assets';
-
-const PRODUCT_PREVIEWS = [
-  { slug: 'creator-launch-kit', title: 'Creator Launch Kit', price: '$29' },
-  { slug: 'carousel-copy-bundle', title: 'Carousel Copy Bundle', price: '$19' },
-  { slug: 'notion-ops-dashboard', title: 'Notion Ops Dashboard', price: '$39' }
-];
 
 export function resolveStorefrontRoute(pathname: string): StorefrontRoute {
   const normalized = normalizePathname(pathname);
@@ -102,31 +98,51 @@ function renderPageBody(route: StorefrontRoute): string {
       return `
         <section>
           <h1>Product Catalog</h1>
-          <p>Current MVP assortment. Payments and fulfillment wiring are next milestones.</p>
+          <p>Current MVP assortment. Product detail pages can now launch Stripe checkout.</p>
           <ul class="product-list">
-            ${PRODUCT_PREVIEWS.map(renderProductCard).join('')}
+            ${PRODUCT_CATALOG.map(renderProductCard).join('')}
           </ul>
         </section>
       `;
-    case 'product':
+    case 'product': {
+      const product = findProductBySlug(route.slug);
+      if (!product) {
+        return `
+          <section>
+            <h1>Product Not Found</h1>
+            <p>No catalog product exists for <code>${escapeHtml(route.slug)}</code>.</p>
+            <a class="button" href="/catalog">Back to Catalog</a>
+          </section>
+        `;
+      }
+
       return `
         <section>
-          <h1>Product Detail Skeleton</h1>
-          <p>Slug: <code>${escapeHtml(route.slug)}</code></p>
+          <h1>${escapeHtml(product.title)}</h1>
+          <p><strong>Price:</strong> ${escapeHtml(product.price)} one-time purchase</p>
           <div class="skeleton-block">
-            <p><strong>Offer summary:</strong> Final copy pending.</p>
-            <p><strong>Value bullets:</strong> Placeholder content for merchandising.</p>
-            <p><strong>Checkout:</strong> Stripe integration to be connected.</p>
+            <p><strong>Offer summary:</strong> Production copy and assets are still in progress.</p>
+            <p><strong>Value bullets:</strong> Final merchandising pass pending.</p>
+            <p><strong>Checkout:</strong> Creates a Stripe Checkout Session from this page.</p>
           </div>
+          <form class="checkout-form" data-checkout-form data-product-slug="${escapeHtml(product.slug)}">
+            <label>
+              Purchase Email (optional)
+              <input type="email" name="email" placeholder="you@example.com" />
+            </label>
+            <button class="button button-primary" type="submit">Start Secure Checkout</button>
+          </form>
+          <p class="status-message" data-checkout-status aria-live="polite"></p>
           <a class="button" href="/catalog">Back to Catalog</a>
         </section>
       `;
+    }
     case 'leadMagnet':
       return `
         <section>
           <h1>Lead Magnet Capture</h1>
-          <p>Collect emails before checkout stack is fully active.</p>
-          <form class="capture-form">
+          <p>Collect emails and store local placeholder lead records for follow-up.</p>
+          <form class="capture-form" data-lead-form>
             <label>
               Email
               <input type="email" name="email" placeholder="you@example.com" required />
@@ -141,6 +157,7 @@ function renderPageBody(route: StorefrontRoute): string {
             </label>
             <button class="button button-primary" type="submit">Send Starter Pack</button>
           </form>
+          <p class="status-message" data-lead-status aria-live="polite"></p>
         </section>
       `;
     case 'notFound':
@@ -200,8 +217,152 @@ export function mountStorefront(doc: Document, pathname: string): void {
   const route = resolveStorefrontRoute(pathname);
   root.innerHTML = renderRoute(route);
   doc.title = getPageTitle(route);
+  bindPageInteractions(root, route);
 }
 
 if (typeof document !== 'undefined') {
   mountStorefront(document, globalThis.location?.pathname ?? '/');
+}
+
+function bindPageInteractions(root: HTMLElement, route: StorefrontRoute): void {
+  if (route.kind === 'product') {
+    bindCheckoutForm(root);
+  }
+
+  if (route.kind === 'leadMagnet') {
+    bindLeadCaptureForm(root);
+  }
+}
+
+function bindCheckoutForm(root: HTMLElement): void {
+  const form = root.querySelector<HTMLFormElement>('[data-checkout-form]');
+  const status = root.querySelector<HTMLElement>('[data-checkout-status]');
+  if (!form || !status) {
+    return;
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const productSlug = form.dataset.productSlug;
+    if (!productSlug) {
+      setStatus(status, 'Checkout is unavailable for this product.', true);
+      return;
+    }
+
+    const emailField = form.elements.namedItem('email');
+    const customerEmail =
+      emailField instanceof HTMLInputElement ? emailField.value.trim() : '';
+
+    setFormBusy(form, true);
+    setStatus(status, 'Creating Stripe Checkout Session...', false);
+
+    try {
+      const response = await fetch('/api/stripe/checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productSlug,
+          customerEmail: customerEmail || undefined
+        })
+      });
+
+      const payload = await parseJsonResponse(response);
+      if (!response.ok) {
+        const apiError = typeof payload?.error === 'string' ? payload.error : 'Request failed.';
+        throw new Error(apiError);
+      }
+
+      const checkoutUrl = typeof payload?.checkoutUrl === 'string' ? payload.checkoutUrl : '';
+      if (!checkoutUrl) {
+        throw new Error('Stripe did not return a checkout URL.');
+      }
+
+      setStatus(status, 'Redirecting to Stripe checkout...', false);
+      globalThis.location.assign(checkoutUrl);
+    } catch (error) {
+      setStatus(status, `Checkout request failed: ${toErrorMessage(error)}`, true);
+      setFormBusy(form, false);
+    }
+  });
+}
+
+function bindLeadCaptureForm(root: HTMLElement): void {
+  const form = root.querySelector<HTMLFormElement>('[data-lead-form]');
+  const status = root.querySelector<HTMLElement>('[data-lead-status]');
+  if (!form || !status) {
+    return;
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const emailField = form.elements.namedItem('email');
+    const goalField = form.elements.namedItem('goal');
+    const email = emailField instanceof HTMLInputElement ? emailField.value.trim() : '';
+    const goal = goalField instanceof HTMLSelectElement ? goalField.value.trim() : '';
+
+    setFormBusy(form, true);
+    setStatus(status, 'Saving your starter pack request...', false);
+
+    try {
+      const response = await fetch('/api/lead-magnet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          goal,
+          sourcePath: globalThis.location?.pathname ?? '/lead-magnet'
+        })
+      });
+
+      const payload = await parseJsonResponse(response);
+      if (!response.ok) {
+        const apiError = typeof payload?.error === 'string' ? payload.error : 'Request failed.';
+        throw new Error(apiError);
+      }
+
+      form.reset();
+      setStatus(status, 'Starter pack request received. Check your inbox shortly.', false, true);
+    } catch (error) {
+      setStatus(status, `Lead capture failed: ${toErrorMessage(error)}`, true);
+    } finally {
+      setFormBusy(form, false);
+    }
+  });
+}
+
+function setFormBusy(form: HTMLFormElement, busy: boolean): void {
+  const controls = form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>(
+    'input, select, button'
+  );
+  controls.forEach((control) => {
+    control.disabled = busy;
+  });
+}
+
+function setStatus(
+  element: HTMLElement,
+  message: string,
+  isError: boolean,
+  isSuccess = false
+): void {
+  element.textContent = message;
+  element.classList.toggle('is-error', isError);
+  element.classList.toggle('is-success', isSuccess);
+}
+
+async function parseJsonResponse(response: Response): Promise<Record<string, unknown> | null> {
+  try {
+    const payload = (await response.json()) as unknown;
+    return isRecord(payload) ? payload : null;
+  } catch {
+    return null;
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function toErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unexpected error.';
 }

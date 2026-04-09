@@ -106,6 +106,7 @@ h1 {
   padding: 0.45rem 0.9rem;
   font-weight: 700;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .button-primary {
@@ -114,24 +115,46 @@ h1 {
   border-color: #174f73;
 }
 
+.checkout-form,
 .capture-form {
   display: grid;
   gap: 0.8rem;
   width: min(440px, 100%);
 }
 
+.checkout-form {
+  margin: 0.85rem 0 0.35rem;
+}
+
+.checkout-form label,
 .capture-form label {
   display: grid;
   gap: 0.3rem;
   font-weight: 600;
 }
 
+.checkout-form input,
 .capture-form input,
 .capture-form select {
   padding: 0.5rem 0.65rem;
   border-radius: 8px;
   border: 1px solid #bdc7d6;
   font: inherit;
+}
+
+.status-message {
+  min-height: 1.2rem;
+  margin: 0.45rem 0 0.85rem;
+  font-size: 0.92rem;
+  color: #25506f;
+}
+
+.status-message.is-error {
+  color: #8f1f1f;
+}
+
+.status-message.is-success {
+  color: #0d5f2b;
 }
 
 .skeleton-block {
@@ -144,6 +167,11 @@ h1 {
   border-top: 1px solid #e2e7ee;
   padding: 0.9rem 1.25rem 1.1rem;
   color: #3a4350;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 @media (max-width: 640px) {

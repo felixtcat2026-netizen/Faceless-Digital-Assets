@@ -36,15 +36,16 @@ describe('renderStorefront', () => {
 
   it('renders the product detail skeleton', () => {
     const html = renderStorefront('/product/carousel-copy-bundle');
-    expect(html).toContain('Product Detail Skeleton');
+    expect(html).toContain('Carousel Copy Bundle');
     expect(html).toContain('carousel-copy-bundle');
-    expect(html).toContain('Stripe integration');
+    expect(html).toContain('Start Secure Checkout');
   });
 
   it('renders the lead magnet capture skeleton', () => {
     const html = renderStorefront('/lead-magnet');
     expect(html).toContain('Lead Magnet Capture');
     expect(html).toContain('Send Starter Pack');
+    expect(html).toContain('data-lead-form');
   });
 });
 
