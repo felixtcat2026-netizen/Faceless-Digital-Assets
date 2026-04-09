@@ -3,17 +3,21 @@
   "private": true,
   "version": "0.1.0",
   "description": "Monorepo baseline for Faceless Digital Assets",
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "packages/config/*"
-  ],
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=24.13.0 <25",
+    "pnpm": ">=10.33.0"
+  },
   "scripts": {
-    "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present",
-    "ci": "npm run lint && npm run typecheck && npm run test && npm run build"
+    "dev": "pnpm --filter @faceless/web dev",
+    "lint": "pnpm -r --if-present lint",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "build": "pnpm -r --if-present build",
+    "stripe:webhook": "stripe listen --forward-to http://localhost:5173/api/stripe/webhook",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "ci": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
   },
   "devDependencies": {
     "@types/node": "^24.6.1",

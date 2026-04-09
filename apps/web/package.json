@@ -4,9 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "dev": "vite",
     "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "build": "tsc -p tsconfig.build.json"
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^7.1.11"
   }
 }

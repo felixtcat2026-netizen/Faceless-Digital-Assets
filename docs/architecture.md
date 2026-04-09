@@ -2,10 +2,19 @@
 
 ## Layout
 
-- `apps/web`: Initial web application package.
+- `apps/web`: Storefront MVP application package.
 - `packages/ui`: Shared UI utility package.
 - `packages/config/eslint`: Shared ESLint baseline.
 - `packages/config/typescript`: Shared TypeScript baseline.
+
+## Storefront MVP Slice (`apps/web`)
+
+The current storefront shell includes:
+
+- `/`: landing/home shell
+- `/catalog`: catalog page skeleton
+- `/product/:slug`: product detail skeleton
+- `/lead-magnet`: lead capture skeleton
 
 ## Quality Gates
 
@@ -15,3 +24,5 @@ The root `ci` script and GitHub Action run:
 2. `typecheck`
 3. `test`
 4. `build`
+
+Commands are executed through `pnpm` workspace scripts.

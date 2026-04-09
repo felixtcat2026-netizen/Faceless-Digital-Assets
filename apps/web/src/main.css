@@ -1,0 +1,160 @@
+:root {
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  color: #1f1f1f;
+  background: radial-gradient(circle at 25% 0%, #f9e7ce, #f5f6f8 55%, #edf0f4 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#app {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+}
+
+.page-shell {
+  background: #ffffffd9;
+  border: 1px solid #d8dde6;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 18px 45px #00000017;
+}
+
+.site-header {
+  background: linear-gradient(140deg, #112a46, #174f73);
+  color: #fff;
+  padding: 1rem 1.25rem;
+}
+
+.brand {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+
+.nav-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.nav-list a {
+  color: #e5f7ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.page-content {
+  padding: 1.4rem 1.25rem 1.6rem;
+}
+
+h1 {
+  margin-top: 0;
+  line-height: 1.2;
+}
+
+.hero {
+  display: grid;
+  gap: 1rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.product-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.2rem 0 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.product-card {
+  border: 1px solid #d2d6dc;
+  border-radius: 14px;
+  padding: 0.95rem;
+  background: #fff;
+}
+
+.product-card h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.1rem;
+}
+
+.button {
+  display: inline-block;
+  margin-top: 0.35rem;
+  border: 1px solid #29496d;
+  color: #173a5a;
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.button-primary {
+  background: #174f73;
+  color: #fff;
+  border-color: #174f73;
+}
+
+.capture-form {
+  display: grid;
+  gap: 0.8rem;
+  width: min(440px, 100%);
+}
+
+.capture-form label {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 600;
+}
+
+.capture-form input,
+.capture-form select {
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #bdc7d6;
+  font: inherit;
+}
+
+.skeleton-block {
+  border-left: 4px solid #174f73;
+  padding: 0.25rem 0 0.25rem 0.75rem;
+  margin: 1rem 0;
+}
+
+.site-footer {
+  border-top: 1px solid #e2e7ee;
+  padding: 0.9rem 1.25rem 1.1rem;
+  color: #3a4350;
+}
+
+@media (max-width: 640px) {
+  #app {
+    padding: 0.8rem;
+  }
+
+  .site-header,
+  .page-content,
+  .site-footer {
+    padding-left: 0.95rem;
+    padding-right: 0.95rem;
+  }
+}
