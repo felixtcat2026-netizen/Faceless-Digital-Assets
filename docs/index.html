@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faceless Digital Assets</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #131a2e;
+      --text: #e9eefc;
+      --muted: #b5c0e0;
+      --accent: #5ea3ff;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(140deg, #0b1020, #162645);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 760px;
+      background: rgba(19, 26, 46, 0.92);
+      border: 1px solid rgba(94, 163, 255, 0.28);
+      border-radius: 16px;
+      padding: 28px;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: clamp(28px, 5vw, 42px);
+    }
+    p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    ul {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 6px;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .links {
+      margin-top: 20px;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .contact {
+      margin-top: 16px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Faceless Digital Assets</h1>
+    <p>
+      Faceless Digital Assets sells downloadable digital products for creators and small businesses.
+      Customers purchase online and receive instant access after checkout.
+    </p>
+    <p>Products include:</p>
+    <ul>
+      <li>Templates and toolkits</li>
+      <li>Guides and digital workbooks</li>
+      <li>Design and content assets</li>
+    </ul>
+    <p class="contact">
+      Contact: <a href="mailto:support@facelessdigitalassets.com">support@facelessdigitalassets.com</a>
+    </p>
+    <nav class="links">
+      <a href="./privacy.html">Privacy Policy</a>
+      <a href="./terms.html">Terms of Service</a>
+      <a href="./refunds.html">Refund Policy</a>
+    </nav>
+  </main>
+</body>
+</html>
