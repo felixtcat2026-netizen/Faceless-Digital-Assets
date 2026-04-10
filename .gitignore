@@ -9,3 +9,10 @@ dist/
 .env.test.local
 .env.production.local
 .local-data/
+
+# Local runtime/debug artifacts
+tmp-*
+tmp-cpuprofile/
+
+# Local VS Code config
+.vscode/launch.json
