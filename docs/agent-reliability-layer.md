@@ -36,9 +36,11 @@ All values are optional environment variables.
 - `MAKE_WEBHOOK_URL`
 - `MAKE_WEBHOOK_API_KEY`
 - `PAPERCLIP_APPROVER_USER_ID` (default: `local-board`)
-- `PAPERCLIP_UI_BASE` (default: `http://127.0.0.1:3100`)
+- `PAPERCLIP_UI_BASE` (default: `http://127.0.0.1:18789`)
 - `PAPERCLIP_APPROVAL_STATUSES` (comma-separated)
 - `PAPERCLIP_RELAY_STATE_PATH`
+
+OpenClaw Control UI now serves from the gateway on `http://127.0.0.1:18789/`. Older `3100` UI references are stale.
 
 Reliability tuning:
 

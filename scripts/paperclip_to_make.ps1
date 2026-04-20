@@ -13,7 +13,7 @@ $MakeWebhookUrl = if ($env:MAKE_WEBHOOK_URL) { $env:MAKE_WEBHOOK_URL } else { "h
 $MakeWebhookApiKey = if ($env:MAKE_WEBHOOK_API_KEY) { $env:MAKE_WEBHOOK_API_KEY } else { "68037izex2mhjvcdyoukps1bw5q9grafl4nt" }
 
 $MyUserId = if ($env:PAPERCLIP_APPROVER_USER_ID) { $env:PAPERCLIP_APPROVER_USER_ID } else { "local-board" }
-$UiBase = if ($env:PAPERCLIP_UI_BASE) { $env:PAPERCLIP_UI_BASE } else { "http://127.0.0.1:3100" }
+$UiBase = if ($env:PAPERCLIP_UI_BASE) { $env:PAPERCLIP_UI_BASE } else { "http://127.0.0.1:18789" }
 
 $StatePath = if ($env:PAPERCLIP_RELAY_STATE_PATH) { $env:PAPERCLIP_RELAY_STATE_PATH } else { "C:\labs\Faceless Digital Assets\scripts\paperclip_to_make.state.json" }
 $LockPath = "$StatePath.lock"

@@ -1,0 +1,921 @@
+// ============================================================
+// NQ FAIR-PRICE FRAMEWORK v1.1
+// Pine Script v6 — INDICATOR (strategy-convertible)
+// Author: Claude / Anthropic — built to specification
+// Designed for NQ/MNQ on 1m, 3m, 5m charts
+// ============================================================
+// SECTION MAP:
+//  1. Boilerplate & version
+//  2. Inputs
+//  3. Session & Time Engine
+//  4. ATR / Body helpers
+//  5. Fair-Price Zone construction
+//  6. Displacement model
+//  7. Rolling structure / BOS model
+//  8. Location / Distance / Extension engine
+//  9. Chop filter
+// 10. Opening impulse model
+// 11. HTF optional filter
+// 12. Setup detection (A-F)
+// 13. Signal grading engine
+// 14. Execution policy
+// 15. Entry-line management
+// 16. Visuals (boxes, lines, labels, dashboard)
+// 17. Alerts
+// ============================================================
+
+//@version=6
+indicator(title="NQ Fair-Price Framework", shorttitle="NQ-FP", overlay=true, max_boxes_count=50, max_lines_count=200, max_labels_count=200)
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 2 — INPUTS
+// ─────────────────────────────────────────────────────────────
+
+// ── Time / Session ──
+i_tz               = input.string("America/New_York", "Timezone",              group="⏰ Session & Time")
+i_mainSession      = input.session("0930-1600",        "Main Session",          group="⏰ Session & Time")
+i_cashOpenHour     = input.int(9,                      "Cash Open Hour (ET)",   group="⏰ Session & Time", minval=0, maxval=23)
+i_cashOpenMin      = input.int(30,                     "Cash Open Minute (ET)", group="⏰ Session & Time", minval=0, maxval=59)
+i_contWindowMins   = input.int(15,                     "Continuation Window (mins after open)", group="⏰ Session & Time", minval=1, maxval=60)
+i_mrWindowEndMins  = input.int(90,                     "Mean-Reversion Window End (mins after open)", group="⏰ Session & Time", minval=11, maxval=240)
+i_lateCutoffHour   = input.int(11,                     "Late-Session Cutoff Hour (ET)", group="⏰ Session & Time", minval=9, maxval=15)
+i_lateCutoffMin    = input.int(0,                      "Late-Session Cutoff Min (ET)",  group="⏰ Session & Time", minval=0, maxval=59)
+
+// ── News Reset ──
+i_newsResetMode    = input.bool(false, "Enable News Reset Mode",               group="📰 News Reset")
+i_newsHour         = input.int(10,    "News Event Hour (ET)",                  group="📰 News Reset", minval=8, maxval=15)
+i_newsMin          = input.int(0,     "News Event Minute (ET)",                group="📰 News Reset", minval=0, maxval=59)
+
+// ── Fair-Price Zone ──
+i_refMode          = input.string("Pre-Open Candle", "Reference Mode",         group="🎯 Fair-Price Zone",
+                       options=["Cash Open Candle","Pre-Open Candle","Pre-News Candle"])
+i_useFullRange     = input.bool(false,  "Use Full Candle Range (not just body)", group="🎯 Fair-Price Zone")
+i_showFPZone       = input.bool(true,   "Show Fair-Price Zone Box",             group="🎯 Fair-Price Zone")
+i_showFPMid        = input.bool(true,   "Show Fair-Price Midpoint Line",        group="🎯 Fair-Price Zone")
+i_showFPLabels     = input.bool(true,   "Show Fair-Price Labels",               group="🎯 Fair-Price Zone")
+i_fpZoneColor      = input.color(color.new(color.blue, 80), "Zone Fill Color",  group="🎯 Fair-Price Zone")
+i_fpBorderColor    = input.color(color.new(color.blue, 40), "Zone Border Color",group="🎯 Fair-Price Zone")
+i_fpMidColor       = input.color(color.blue,                "Midpoint Color",   group="🎯 Fair-Price Zone")
+
+// ── ATR / Body ──
+i_atrLen           = input.int(14,  "ATR Length",                              group="📏 ATR & Body")
+i_bodyLookback     = input.int(10,  "Average Body Lookback",                   group="📏 ATR & Body")
+
+// ── Displacement ──
+i_dispBodyMult     = input.float(1.2, "Displacement Body Multiplier",          group="⚡ Displacement", minval=0.5, step=0.1)
+i_dispAtrMult      = input.float(0.4, "Displacement ATR Multiplier",           group="⚡ Displacement", minval=0.1, step=0.1)
+i_dispWickPct      = input.float(0.25,"Displacement Max Opp-Wick % of Range",  group="⚡ Displacement", minval=0.0, maxval=1.0, step=0.05)
+i_dispCloseLoc     = input.float(0.7, "Displacement Min Close Location (0-1)", group="⚡ Displacement", minval=0.5, maxval=1.0, step=0.05)
+i_dispRangeExpMult = input.float(1.2, "Range Expansion vs Avg-Body Mult",      group="⚡ Displacement", minval=0.5, step=0.1)
+
+// ── Opening Candle ──
+i_dojiThresh       = input.float(0.1,  "Doji Body/Range Threshold",            group="🕯 Opening Candle", minval=0.01, maxval=0.5, step=0.01)
+i_wickBodyThresh   = input.float(2.0,  "Max Wick/Body Ratio (indecisive)",     group="🕯 Opening Candle", minval=0.5, step=0.1)
+i_bodySizeThresh   = input.float(0.3,  "Min Body/ATR for Directional Candle",  group="🕯 Opening Candle", minval=0.0, step=0.05)
+
+// ── Structure / BOS ──
+i_swingLookback    = input.int(5,    "Rolling Swing Lookback (bars)",          group="🔲 Structure / BOS", minval=2, maxval=20)
+i_usePivotMode     = input.bool(false,"Enable Pivot-Based Structure (delayed)", group="🔲 Structure / BOS")
+i_pivotLeft        = input.int(5,    "Pivot Left Bars",                        group="🔲 Structure / BOS", minval=2)
+i_pivotRight       = input.int(3,    "Pivot Right Bars (DELAYED confirmation)",group="🔲 Structure / BOS", minval=1)
+
+// ── Extension / Distance ──
+i_extThreshAtr     = input.float(1.5, "Extension Threshold (ATR multiples)",   group="📐 Extension & Distance", minval=0.5, step=0.1)
+i_minRevDistAtr    = input.float(0.6, "Min Remaining Reversion Distance (ATR)",group="📐 Extension & Distance", minval=0.2, step=0.1)
+
+// ── HTF Filter ──
+i_htfFilterMode    = input.string("EMA Bias", "HTF Filter Mode",               group="🔭 HTF Filter",
+                       options=["Off","EMA Bias","Structure Bias","Both"])
+i_htfTf            = input.timeframe("15", "HTF Timeframe",                    group="🔭 HTF Filter")
+i_htfEmaLen        = input.int(21,    "HTF EMA Length",                        group="🔭 HTF Filter", minval=5)
+i_htfStructLookback= input.int(20,    "HTF Structure Lookback (bars)",         group="🔭 HTF Filter", minval=5)
+
+// ── Grading ──
+i_gradeAplus       = input.int(80, "A+ Score Cutoff (0-100)",                  group="📊 Grading", minval=50, maxval=99)
+i_gradeA           = input.int(60, "A Score Cutoff (0-100)",                   group="📊 Grading", minval=30, maxval=98)
+i_gradeB           = input.int(40, "B Score Cutoff (0-100)",                   group="📊 Grading", minval=10, maxval=97)
+
+// ── Execution Policy ──
+i_execMode         = input.string("Study Mode", "Execution Policy Mode",       group="⚙️ Execution Policy",
+                       options=["Study Mode","Prop Discretionary","Challenge Pass-Rate"])
+i_maxSigsPerDay    = input.int(3,     "Max Signals Per Day",                   group="⚙️ Execution Policy", minval=1, maxval=20)
+i_allowSameDir     = input.bool(true,  "Allow Multiple Same-Direction Attempts",group="⚙️ Execution Policy")
+i_onlyAandAplus    = input.bool(false, "Only Show A and A+ Setups",            group="⚙️ Execution Policy")
+
+// ── Entry Lines ──
+i_showEntryLines   = input.bool(true,  "Show Entry Lines",                     group="📍 Entry Lines")
+i_entryTriggerMode = input.string("Close", "Entry Trigger Mode",               group="📍 Entry Lines",
+                       options=["Close","Breakout","Retest"])
+i_entryExtBars     = input.int(30,    "Entry Line Extension (bars)",           group="📍 Entry Lines", minval=5, maxval=200)
+i_entryStaleAfter  = input.int(50,    "Delete Stale Entry Line After (bars)",  group="📍 Entry Lines", minval=10, maxval=500)
+i_maxActiveLines   = input.int(6,     "Max Active Entry Lines",                group="📍 Entry Lines", minval=1, maxval=20)
+i_showEntryLabels  = input.bool(true,  "Show Entry Labels",                    group="📍 Entry Lines")
+
+// ── Visuals ──
+i_showLabels       = input.bool(true,  "Show Setup Labels",                    group="🎨 Visuals")
+i_showDashboard    = input.bool(true,  "Show Dashboard",                       group="🎨 Visuals")
+i_showOpeningRange = input.bool(true,  "Show Opening Range High/Low",          group="🎨 Visuals")
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 3 — SESSION & TIME ENGINE
+// ─────────────────────────────────────────────────────────────
+
+barTimeET = time(timeframe.period, i_mainSession, i_tz)
+inMainSession = not na(barTimeET)
+
+barHourET  = hour(time, i_tz)
+barMinET   = minute(time, i_tz)
+barTotalMinET = barHourET * 60 + barMinET
+
+cashOpenTotalMin   = i_cashOpenHour * 60 + i_cashOpenMin
+lateCutoffTotalMin = i_lateCutoffHour * 60 + i_lateCutoffMin
+newsTotalMin       = i_newsHour * 60 + i_newsMin
+
+minsAfterOpen = barTotalMinET - cashOpenTotalMin
+
+isPreEvent           = inMainSession and minsAfterOpen < 0
+isContinuationWindow = inMainSession and minsAfterOpen >= 0 and minsAfterOpen < i_contWindowMins
+isMRWindow           = inMainSession and minsAfterOpen >= i_contWindowMins and barTotalMinET < i_mrWindowEndMins + cashOpenTotalMin
+isLateSession        = inMainSession and barTotalMinET >= lateCutoffTotalMin
+isNoTradeState       = not inMainSession or isLateSession
+
+isPreNewsBar = i_newsResetMode and barTotalMinET == (newsTotalMin - 1)
+isNewsBar    = i_newsResetMode and barTotalMinET == newsTotalMin
+
+currentDayKey = year(time, i_tz) * 10000 + month(time, i_tz) * 100 + dayofmonth(time, i_tz)
+
+var int lastDayKey = na
+isNewSession = false
+if inMainSession and minsAfterOpen == 0
+    if na(lastDayKey) or currentDayKey != lastDayKey
+        isNewSession := true
+        lastDayKey := currentDayKey
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 4 — ATR & BODY HELPERS
+// ─────────────────────────────────────────────────────────────
+
+atr = ta.atr(i_atrLen)
+
+bodySize    = math.abs(close - open)
+candleRange = high - low
+
+var float[] bodyArr = array.new_float(i_bodyLookback, na)
+if barstate.isconfirmed
+    array.push(bodyArr, bodySize)
+    if array.size(bodyArr) > i_bodyLookback
+        array.shift(bodyArr)
+avgBody = array.avg(bodyArr)
+
+closeLocInCandle(h, l, c) =>
+    r = h - l
+    r > 0 ? (c - l) / r : 0.5
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 5 — FAIR-PRICE ZONE CONSTRUCTION
+// ─────────────────────────────────────────────────────────────
+
+var float fpRefOpen  = na
+var float fpRefClose = na
+var float fpRefHigh  = na
+var float fpRefLow   = na
+var float fpZoneHigh = na
+var float fpZoneLow  = na
+var float fpMid      = na
+var int   fpZoneStartBar = na
+
+var float fpNewsZoneHigh = na
+var float fpNewsZoneLow  = na
+var float fpNewsMid      = na
+var int   fpNewsZoneStartBar = na
+
+var bool  preOpenCaptured  = false
+var float preOpenO = na
+var float preOpenC = na
+var float preOpenH = na
+var float preOpenL = na
+
+var bool  cashOpenCaptured = false
+var float cashOpenO = na
+var float cashOpenC = na
+var float cashOpenH = na
+var float cashOpenL = na
+
+var bool  preNewsCaptured  = false
+var float preNewsO = na
+var float preNewsC = na
+var float preNewsH = na
+var float preNewsL = na
+
+if isNewSession
+    preOpenCaptured  := false
+    cashOpenCaptured := false
+    preNewsCaptured  := false
+    fpRefOpen  := na
+    fpRefClose := na
+    fpRefHigh  := na
+    fpRefLow   := na
+    fpZoneHigh := na
+    fpZoneLow  := na
+    fpMid      := na
+    fpZoneStartBar := na
+    fpNewsZoneHigh := na
+    fpNewsZoneLow  := na
+    fpNewsMid      := na
+    fpNewsZoneStartBar := na
+
+// FIX: capture every bar before open so the last one before cash open is used
+// Works correctly on 1m, 3m, and 5m charts
+if inMainSession and barTotalMinET < cashOpenTotalMin and barstate.isconfirmed
+    preOpenO := open
+    preOpenC := close
+    preOpenH := high
+    preOpenL := low
+    preOpenCaptured := true
+
+if inMainSession and minsAfterOpen == 0 and barstate.isconfirmed
+    cashOpenO := open
+    cashOpenC := close
+    cashOpenH := high
+    cashOpenL := low
+    cashOpenCaptured := true
+
+if isPreNewsBar and barstate.isconfirmed
+    preNewsO := open
+    preNewsC := close
+    preNewsH := high
+    preNewsL := low
+    preNewsCaptured := true
+
+buildFPZone(refO, refC, refH, refL, useBody) =>
+    zh = useBody ? math.max(refO, refC) : refH
+    zl = useBody ? math.min(refO, refC) : refL
+    zm = (zh + zl) / 2.0
+    [zh, zl, zm]
+
+if minsAfterOpen == 0 and barstate.isconfirmed and na(fpZoneHigh)
+    if i_refMode == "Cash Open Candle" and cashOpenCaptured
+        [zh, zl, zm] = buildFPZone(cashOpenO, cashOpenC, cashOpenH, cashOpenL, not i_useFullRange)
+        fpZoneHigh     := zh
+        fpZoneLow      := zl
+        fpMid          := zm
+        fpZoneStartBar := bar_index
+    else if i_refMode == "Pre-Open Candle" and preOpenCaptured
+        [zh, zl, zm] = buildFPZone(preOpenO, preOpenC, preOpenH, preOpenL, not i_useFullRange)
+        fpZoneHigh     := zh
+        fpZoneLow      := zl
+        fpMid          := zm
+        fpZoneStartBar := bar_index
+    else if i_refMode == "Pre-News Candle" and preNewsCaptured
+        [zh, zl, zm] = buildFPZone(preNewsO, preNewsC, preNewsH, preNewsL, not i_useFullRange)
+        fpZoneHigh     := zh
+        fpZoneLow      := zl
+        fpMid          := zm
+        fpZoneStartBar := bar_index
+
+if isNewsBar and barstate.isconfirmed and preNewsCaptured
+    [zh, zl, zm] = buildFPZone(preNewsO, preNewsC, preNewsH, preNewsL, not i_useFullRange)
+    fpNewsZoneHigh     := zh
+    fpNewsZoneLow      := zl
+    fpNewsMid          := zm
+    fpNewsZoneStartBar := bar_index
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 6 — DISPLACEMENT MODEL
+// ─────────────────────────────────────────────────────────────
+
+isCleanDisplacement(dir) =>
+    if not barstate.isconfirmed
+        false
+    else
+        bodySuff  = bodySize > (avgBody * i_dispBodyMult) or bodySize > (atr * i_dispAtrMult)
+        rangeExp  = candleRange > (avgBody * i_dispRangeExpMult)
+        closeLoc  = closeLocInCandle(high, low, close)
+        if dir == 1
+            // FIX: lower wick = distance from low to bottom of body
+            oppWick   = math.min(open, close) - low
+            oppWickOk = candleRange > 0 ? (oppWick / candleRange) <= i_dispWickPct : true
+            dirOk     = close > open
+            closeSuff = closeLoc >= i_dispCloseLoc
+            bodySuff and rangeExp and oppWickOk and dirOk and closeSuff
+        else if dir == -1
+            // upper wick = distance from top of body to high
+            oppWick   = high - math.max(open, close)
+            oppWickOk = candleRange > 0 ? (oppWick / candleRange) <= i_dispWickPct : true
+            dirOk     = close < open
+            closeLocBear = 1.0 - closeLoc
+            closeSuff = closeLocBear >= i_dispCloseLoc
+            bodySuff and rangeExp and oppWickOk and dirOk and closeSuff
+        else
+            false
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 7 — ROLLING STRUCTURE / BOS MODEL
+// ─────────────────────────────────────────────────────────────
+
+var float swingHigh = na
+var float swingLow  = na
+
+rollingHigh = ta.highest(close, i_swingLookback)
+rollingLow  = ta.lowest(close, i_swingLookback)
+
+if barstate.isconfirmed
+    swingHigh := rollingHigh[1]
+    swingLow  := rollingLow[1]
+
+bullBOS = barstate.isconfirmed and not na(swingHigh) and close > swingHigh
+bearBOS = barstate.isconfirmed and not na(swingLow)  and close < swingLow
+
+pivotHighPrice = i_usePivotMode ? ta.pivothigh(high, i_pivotLeft, i_pivotRight) : na
+pivotLowPrice  = i_usePivotMode ? ta.pivotlow(low,  i_pivotLeft, i_pivotRight) : na
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 8 — LOCATION / DISTANCE / EXTENSION ENGINE
+// ─────────────────────────────────────────────────────────────
+
+aboveFPZone  = not na(fpZoneHigh) and close > fpZoneHigh
+belowFPZone  = not na(fpZoneLow)  and close < fpZoneLow
+insideFPZone = not na(fpZoneHigh) and not na(fpZoneLow) and close >= fpZoneLow and close <= fpZoneHigh
+
+distToNearEdge = not na(fpZoneHigh) and not na(fpZoneLow) ?
+     (aboveFPZone ? close - fpZoneHigh : belowFPZone ? fpZoneLow - close : 0.0) : na
+
+extensionAtr   = not na(distToNearEdge) and atr > 0 ? distToNearEdge / atr : na
+isOverExtended = not na(extensionAtr) and extensionAtr >= i_extThreshAtr
+
+remRevDistAtr  = not na(fpMid) and atr > 0 ? math.abs(close - fpMid) / atr : na
+sufficientRevDist = not na(remRevDistAtr) and remRevDistAtr >= i_minRevDistAtr
+
+aboveNewsZone  = not na(fpNewsZoneHigh) and close > fpNewsZoneHigh
+belowNewsZone  = not na(fpNewsZoneLow)  and close < fpNewsZoneLow
+insideNewsZone = not na(fpNewsZoneHigh) and not na(fpNewsZoneLow) and close >= fpNewsZoneLow and close <= fpNewsZoneHigh
+distNewsNearEdge = not na(fpNewsZoneHigh) and not na(fpNewsZoneLow) ?
+     (aboveNewsZone ? close - fpNewsZoneHigh : belowNewsZone ? fpNewsZoneLow - close : 0.0) : na
+extNewsAtr            = not na(distNewsNearEdge) and atr > 0 ? distNewsNearEdge / atr : na
+isOverExtendedNews    = not na(extNewsAtr) and extNewsAtr >= i_extThreshAtr
+remRevDistNewsAtr     = not na(fpNewsMid) and atr > 0 ? math.abs(close - fpNewsMid) / atr : na
+sufficientRevDistNews = not na(remRevDistNewsAtr) and remRevDistNewsAtr >= i_minRevDistAtr
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 9 — CHOP FILTER
+// ─────────────────────────────────────────────────────────────
+
+chopWindow = 8
+var float[] recentCloses = array.new_float(chopWindow, na)
+
+if barstate.isconfirmed
+    array.push(recentCloses, close)
+    if array.size(recentCloses) > chopWindow
+        array.shift(recentCloses)
+
+dirChangeCount = 0
+for i = 2 to math.min(array.size(recentCloses) - 1, chopWindow - 1)
+    prevC = array.get(recentCloses, i - 1)
+    curC  = array.get(recentCloses, i)
+    prevPrevC = array.get(recentCloses, i - 2)
+    if not na(prevC) and not na(curC) and not na(prevPrevC)
+        if (curC > prevC and prevPrevC > prevC) or (curC < prevC and prevPrevC < prevC)
+            dirChangeCount += 1
+
+recentRangeHigh = ta.highest(high, chopWindow)
+recentRangeLow  = ta.lowest(low, chopWindow)
+rangeCompression = atr > 0 ? (recentRangeHigh - recentRangeLow) / atr : na
+
+chopScore = 0
+if dirChangeCount >= 3
+    chopScore += 1
+if not na(rangeCompression) and rangeCompression < 1.5
+    chopScore += 1
+if insideFPZone
+    chopScore += 1
+
+isChoppy = chopScore >= 2
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 10 — OPENING IMPULSE MODEL
+// ─────────────────────────────────────────────────────────────
+
+var int  openImpulseDir = 0
+var bool impulseSet     = false
+
+if isNewSession
+    openImpulseDir := 0
+    impulseSet     := false
+
+if minsAfterOpen == 0 and barstate.isconfirmed and not impulseSet
+    bodyRatio    = candleRange > 0 ? bodySize / candleRange : 0
+    wickBodyRatio = bodySize > 0 ? (high - math.max(open, close) + math.min(open, close) - low) / bodySize : 999
+    isDoji  = bodyRatio < i_dojiThresh
+    isWicky = wickBodyRatio > i_wickBodyThresh
+    isSmall = bodySize < (atr * i_bodySizeThresh)
+    if not isDoji and not isWicky and not isSmall
+        openImpulseDir := close > open ? 1 : -1
+        impulseSet     := true
+
+if inMainSession and not impulseSet and minsAfterOpen > 0 and minsAfterOpen <= i_contWindowMins and barstate.isconfirmed
+    if isCleanDisplacement(1)
+        openImpulseDir := 1
+        impulseSet     := true
+    else if isCleanDisplacement(-1)
+        openImpulseDir := -1
+        impulseSet     := true
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 11 — OPTIONAL HTF FILTER
+// ─────────────────────────────────────────────────────────────
+
+htfClose     = request.security(syminfo.tickerid, i_htfTf, close[1],                          lookahead=barmerge.lookahead_off)
+htfEma       = request.security(syminfo.tickerid, i_htfTf, ta.ema(close, i_htfEmaLen)[1],     lookahead=barmerge.lookahead_off)
+// FIX: removed extra [1] offset — htfSwingHigh/Low are already offset by [1] in request.security
+htfSwingHigh = request.security(syminfo.tickerid, i_htfTf, ta.highest(close, i_htfStructLookback)[1], lookahead=barmerge.lookahead_off)
+htfSwingLow  = request.security(syminfo.tickerid, i_htfTf, ta.lowest(close,  i_htfStructLookback)[1], lookahead=barmerge.lookahead_off)
+
+htfBullish = false
+htfBearish = false
+
+if i_htfFilterMode != "Off"
+    emaBull    = htfClose > htfEma
+    emaBear    = htfClose < htfEma
+    // FIX: removed stale [1] offset on htfSwingHigh/Low
+    structBull = htfClose > htfSwingHigh
+    structBear = htfClose < htfSwingLow
+    if i_htfFilterMode == "EMA Bias"
+        htfBullish := emaBull
+        htfBearish := emaBear
+    else if i_htfFilterMode == "Structure Bias"
+        htfBullish := structBull
+        htfBearish := structBear
+    else if i_htfFilterMode == "Both"
+        htfBullish := emaBull and structBull
+        htfBearish := emaBear and structBear
+else
+    htfBullish := true
+    htfBearish := true
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 12 — SETUP DETECTION (A–F)
+// ─────────────────────────────────────────────────────────────
+
+fpZoneDefined = not na(fpZoneHigh) and not na(fpZoneLow) and not na(fpMid)
+
+setupA_OC_Long = barstate.isconfirmed and
+     fpZoneDefined and
+     isContinuationWindow and
+     (openImpulseDir == 1 or isCleanDisplacement(1)) and
+     (bullBOS or isCleanDisplacement(1)) and
+     aboveFPZone and
+     not isOverExtended and
+     not isChoppy and
+     htfBullish
+
+setupB_OC_Short = barstate.isconfirmed and
+     fpZoneDefined and
+     isContinuationWindow and
+     (openImpulseDir == -1 or isCleanDisplacement(-1)) and
+     (bearBOS or isCleanDisplacement(-1)) and
+     belowFPZone and
+     not isOverExtended and
+     not isChoppy and
+     htfBearish
+
+setupC_MR_Long = barstate.isconfirmed and
+     fpZoneDefined and
+     isMRWindow and
+     belowFPZone and
+     not insideFPZone and
+     (bullBOS or isCleanDisplacement(1)) and
+     sufficientRevDist and
+     not isChoppy and
+     htfBullish
+
+setupD_MR_Short = barstate.isconfirmed and
+     fpZoneDefined and
+     isMRWindow and
+     aboveFPZone and
+     not insideFPZone and
+     (bearBOS or isCleanDisplacement(-1)) and
+     sufficientRevDist and
+     not isChoppy and
+     htfBearish
+
+setupE_News_Long = barstate.isconfirmed and
+     i_newsResetMode and
+     not na(fpNewsZoneHigh) and
+     isMRWindow and
+     belowNewsZone and
+     not insideNewsZone and
+     (bullBOS or isCleanDisplacement(1)) and
+     sufficientRevDistNews and
+     not isChoppy and
+     htfBullish
+
+setupF_News_Short = barstate.isconfirmed and
+     i_newsResetMode and
+     not na(fpNewsZoneHigh) and
+     isMRWindow and
+     aboveNewsZone and
+     not insideNewsZone and
+     (bearBOS or isCleanDisplacement(-1)) and
+     sufficientRevDistNews and
+     not isChoppy and
+     htfBearish
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 13 — SIGNAL GRADING ENGINE (0-100)
+// ─────────────────────────────────────────────────────────────
+
+calcGrade(isLong, isCont, isNews, hasHTF) =>
+    score = 0
+
+    if isCont and isContinuationWindow
+        score += 20
+    else if not isCont and isMRWindow
+        score += 20
+
+    if (isLong and openImpulseDir == 1) or (not isLong and openImpulseDir == -1)
+        score += 15
+    else if openImpulseDir == 0
+        score += 5
+
+    if isLong and isCleanDisplacement(1)
+        score += 15
+    else if not isLong and isCleanDisplacement(-1)
+        score += 15
+    else
+        score += 5
+
+    if isLong and bullBOS
+        score += 15
+    else if not isLong and bearBOS
+        score += 15
+    else
+        score += 3
+
+    if not na(remRevDistAtr)
+        score += math.min(15, math.round(remRevDistAtr * 5))
+
+    if isChoppy
+        score -= 15
+
+    if isOverExtended
+        score -= 10
+
+    if hasHTF and i_htfFilterMode != "Off"
+        score += 10
+
+    if isNews
+        score += 5
+
+    math.max(0, math.min(100, score))
+
+gradeA_OC_Long    = setupA_OC_Long   ? calcGrade(true,  true,  false, htfBullish) : 0
+gradeB_OC_Short   = setupB_OC_Short  ? calcGrade(false, true,  false, htfBearish) : 0
+gradeC_MR_Long    = setupC_MR_Long   ? calcGrade(true,  false, false, htfBullish) : 0
+gradeD_MR_Short   = setupD_MR_Short  ? calcGrade(false, false, false, htfBearish) : 0
+gradeE_News_Long  = setupE_News_Long  ? calcGrade(true,  false, true,  htfBullish) : 0
+gradeF_News_Short = setupF_News_Short ? calcGrade(false, false, true,  htfBearish) : 0
+
+gradeToStr(g) =>
+    g >= i_gradeAplus ? "A+" : g >= i_gradeA ? "A" : g >= i_gradeB ? "B" : "C"
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 14 — EXECUTION POLICY
+// ─────────────────────────────────────────────────────────────
+
+var int sigsToday      = 0
+var int longsDirToday  = 0
+var int shortsDirToday = 0
+var int bestScoreToday = 0
+
+if isNewSession
+    sigsToday      := 0
+    longsDirToday  := 0
+    shortsDirToday := 0
+    bestScoreToday := 0
+
+policyAllow(rawSignal, isLong, score) =>
+    if not rawSignal
+        false
+    else
+        gradeStr = gradeToStr(score)
+        if i_onlyAandAplus and gradeStr == "B"
+            false
+        else if i_execMode == "Study Mode"
+            true
+        else if i_execMode == "Prop Discretionary"
+            if sigsToday >= i_maxSigsPerDay
+                false
+            else if not i_allowSameDir and isLong and longsDirToday > 0
+                false
+            else if not i_allowSameDir and not isLong and shortsDirToday > 0
+                false
+            else
+                true
+        else if i_execMode == "Challenge Pass-Rate"
+            score > bestScoreToday
+        else
+            true
+
+sigA = policyAllow(setupA_OC_Long,    true,  gradeA_OC_Long)
+sigB = policyAllow(setupB_OC_Short,   false, gradeB_OC_Short)
+sigC = policyAllow(setupC_MR_Long,    true,  gradeC_MR_Long)
+sigD = policyAllow(setupD_MR_Short,   false, gradeD_MR_Short)
+sigE = policyAllow(setupE_News_Long,  true,  gradeE_News_Long)
+sigF = policyAllow(setupF_News_Short, false, gradeF_News_Short)
+
+anySig     = sigA or sigB or sigC or sigD or sigE or sigF
+anyBuySig  = sigA or sigC or sigE
+anySellSig = sigB or sigD or sigF
+
+if barstate.isconfirmed
+    if sigA or sigC or sigE
+        sigsToday      += 1
+        longsDirToday  += 1
+        if sigA
+            bestScoreToday := math.max(bestScoreToday, gradeA_OC_Long)
+        if sigC
+            bestScoreToday := math.max(bestScoreToday, gradeC_MR_Long)
+        if sigE
+            bestScoreToday := math.max(bestScoreToday, gradeE_News_Long)
+    if sigB or sigD or sigF
+        sigsToday       += 1
+        shortsDirToday  += 1
+        if sigB
+            bestScoreToday := math.max(bestScoreToday, gradeB_OC_Short)
+        if sigD
+            bestScoreToday := math.max(bestScoreToday, gradeD_MR_Short)
+        if sigF
+            bestScoreToday := math.max(bestScoreToday, gradeF_News_Short)
+
+maxSigsReached = sigsToday >= i_maxSigsPerDay
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 15 — ENTRY LINE MANAGEMENT
+// ─────────────────────────────────────────────────────────────
+
+entryPrice(isLong, isCont) =>
+    if i_entryTriggerMode == "Close"
+        close
+    else if i_entryTriggerMode == "Breakout"
+        isLong ? swingHigh : swingLow
+    else
+        isLong ?
+          (isCont ? fpZoneHigh : fpZoneLow) :
+          (isCont ? fpZoneLow  : fpZoneHigh)
+
+var line[]  activeEntryLines    = array.new_line()
+var int[]   activeEntryLineBars = array.new_int()
+var bool[]  activeEntryLineLong = array.new_bool()
+
+pruneStaleLines() =>
+    i = 0
+    while i < array.size(activeEntryLines)
+        birthBar = array.get(activeEntryLineBars, i)
+        if bar_index - birthBar > i_entryStaleAfter
+            line.delete(array.get(activeEntryLines, i))
+            array.remove(activeEntryLines, i)
+            array.remove(activeEntryLineBars, i)
+            array.remove(activeEntryLineLong, i)
+        else
+            i += 1
+
+capLines() =>
+    while array.size(activeEntryLines) > i_maxActiveLines
+        line.delete(array.shift(activeEntryLines))
+        array.shift(activeEntryLineBars)
+        array.shift(activeEntryLineLong)
+
+drawEntryLine(isLong, ep, setupStr, gradeStr) =>
+    lineColor = isLong ? color.new(color.green, 0) : color.new(color.red, 0)
+    ln = line.new(bar_index, ep, bar_index + i_entryExtBars, ep,
+         color=lineColor, width=2, style=line.style_solid)
+    array.push(activeEntryLines, ln)
+    array.push(activeEntryLineBars, bar_index)
+    array.push(activeEntryLineLong, isLong)
+    if i_showEntryLabels
+        dirStr    = isLong ? "BUY ENTRY" : "SELL ENTRY"
+        labelTxt  = dirStr + "\n" + setupStr + " " + gradeStr + "\n" + str.tostring(ep, "#.##")
+        labelColor = isLong ? color.new(color.green, 70) : color.new(color.red, 70)
+        label.new(bar_index, ep, labelTxt,
+             color=labelColor, textcolor=color.white,
+             style=isLong ? label.style_label_up : label.style_label_down,
+             size=size.small)
+
+if barstate.isconfirmed and i_showEntryLines
+    pruneStaleLines()
+    capLines()
+    if sigA
+        drawEntryLine(true,  entryPrice(true,  true),  "OC Long",   gradeToStr(gradeA_OC_Long))
+    if sigB
+        drawEntryLine(false, entryPrice(false, true),  "OC Short",  gradeToStr(gradeB_OC_Short))
+    if sigC
+        drawEntryLine(true,  entryPrice(true,  false), "MR Long",   gradeToStr(gradeC_MR_Long))
+    if sigD
+        drawEntryLine(false, entryPrice(false, false), "MR Short",  gradeToStr(gradeD_MR_Short))
+    if sigE
+        drawEntryLine(true,  entryPrice(true,  false), "News Long", gradeToStr(gradeE_News_Long))
+    if sigF
+        drawEntryLine(false, entryPrice(false, false), "News Short",gradeToStr(gradeF_News_Short))
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 16 — VISUALS
+// ─────────────────────────────────────────────────────────────
+
+var box  fpBox         = na
+var box  fpNewsBox     = na
+var line fpMidLine     = na
+var line fpNewsMidLine = na
+
+if fpZoneDefined
+    activeEndBar = bar_index + 3
+    if na(fpBox) or isNewSession
+        if not na(fpBox)
+            box.delete(fpBox)
+        if not na(fpMidLine)
+            line.delete(fpMidLine)
+        if i_showFPZone
+            fpBox := box.new(fpZoneStartBar, fpZoneHigh, activeEndBar, fpZoneLow,
+                 border_color=i_fpBorderColor, bgcolor=i_fpZoneColor, border_width=1)
+        if i_showFPMid
+            fpMidLine := line.new(fpZoneStartBar, fpMid, activeEndBar, fpMid,
+                 color=i_fpMidColor, width=1, style=line.style_dashed)
+    else
+        if not na(fpBox) and i_showFPZone
+            box.set_right(fpBox, activeEndBar)
+            box.set_top(fpBox, fpZoneHigh)
+            box.set_bottom(fpBox, fpZoneLow)
+        if not na(fpMidLine) and i_showFPMid
+            line.set_x2(fpMidLine, activeEndBar)
+
+if fpZoneDefined and i_showFPLabels and barstate.islast
+    label.new(bar_index, fpZoneHigh, "Fair Price Zone ▲",
+         color=color.new(color.blue, 80), textcolor=color.blue,
+         style=label.style_label_left, size=size.small)
+    label.new(bar_index, fpMid, "Open Mid",
+         color=color.new(color.blue, 90), textcolor=color.blue,
+         style=label.style_label_left, size=size.tiny)
+
+if i_newsResetMode and not na(fpNewsZoneHigh)
+    activeEndBar = bar_index + 3
+    if na(fpNewsBox)
+        fpNewsBox := box.new(fpNewsZoneStartBar, fpNewsZoneHigh, activeEndBar, fpNewsZoneLow,
+             border_color=color.new(color.orange, 40), bgcolor=color.new(color.orange, 85), border_width=1)
+        fpNewsMidLine := line.new(fpNewsZoneStartBar, fpNewsMid, activeEndBar, fpNewsMid,
+             color=color.orange, width=1, style=line.style_dashed)
+    else
+        box.set_right(fpNewsBox, activeEndBar)
+        if not na(fpNewsMidLine)
+            line.set_x2(fpNewsMidLine, activeEndBar)
+    if barstate.islast
+        label.new(bar_index, fpNewsZoneHigh, "News Mid ▲",
+             color=color.new(color.orange, 80), textcolor=color.orange,
+             style=label.style_label_left, size=size.tiny)
+
+// ── Optional Opening Range ──
+var float orHigh     = na
+var float orLow      = na
+var bool  orBuilding = false
+
+if isNewSession
+    orHigh    := na
+    orLow     := na
+    orBuilding := true
+
+if orBuilding and inMainSession and minsAfterOpen >= 0 and minsAfterOpen < i_contWindowMins
+    orHigh := na(orHigh) ? high : math.max(orHigh, high)
+    orLow  := na(orLow)  ? low  : math.min(orLow, low)
+
+if orBuilding and minsAfterOpen >= i_contWindowMins
+    orBuilding := false
+
+plot(i_showOpeningRange and not na(orHigh) ? orHigh : na, "OR High", color=color.new(color.gray, 50), linewidth=1, style=plot.style_circles)
+plot(i_showOpeningRange and not na(orLow)  ? orLow  : na, "OR Low",  color=color.new(color.gray, 50), linewidth=1, style=plot.style_circles)
+
+// ── Signal Labels ──
+if barstate.isconfirmed and i_showLabels
+    if sigA
+        label.new(bar_index, low - atr * 0.5, gradeToStr(gradeA_OC_Long) + " OC Long",
+             color=color.new(color.green, 60), textcolor=color.white,
+             style=label.style_label_up, size=size.small)
+    if sigB
+        label.new(bar_index, high + atr * 0.5, gradeToStr(gradeB_OC_Short) + " OC Short",
+             color=color.new(color.red, 60), textcolor=color.white,
+             style=label.style_label_down, size=size.small)
+    if sigC
+        label.new(bar_index, low - atr * 0.5, gradeToStr(gradeC_MR_Long) + " MR Long",
+             color=color.new(color.teal, 60), textcolor=color.white,
+             style=label.style_label_up, size=size.small)
+    if sigD
+        label.new(bar_index, high + atr * 0.5, gradeToStr(gradeD_MR_Short) + " MR Short",
+             color=color.new(color.maroon, 60), textcolor=color.white,
+             style=label.style_label_down, size=size.small)
+    if sigE
+        label.new(bar_index, low - atr * 0.5, gradeToStr(gradeE_News_Long) + " News Long",
+             color=color.new(color.orange, 60), textcolor=color.white,
+             style=label.style_label_up, size=size.small)
+    if sigF
+        label.new(bar_index, high + atr * 0.5, gradeToStr(gradeF_News_Short) + " News Short",
+             color=color.new(color.orange, 60), textcolor=color.white,
+             style=label.style_label_down, size=size.small)
+
+if i_usePivotMode
+    if not na(pivotHighPrice)
+        label.new(bar_index[i_pivotRight], pivotHighPrice, "PH",
+             color=color.new(color.gray, 70), textcolor=color.gray,
+             style=label.style_label_down, size=size.tiny)
+    if not na(pivotLowPrice)
+        label.new(bar_index[i_pivotRight], pivotLowPrice, "PL",
+             color=color.new(color.gray, 70), textcolor=color.gray,
+             style=label.style_label_up, size=size.tiny)
+
+htfBiasColor = i_htfFilterMode != "Off" ?
+     (htfBullish ? color.new(color.green, 90) : htfBearish ? color.new(color.red, 90) : color.new(color.gray, 90)) : na
+bgcolor(i_htfFilterMode != "Off" ? htfBiasColor : na, title="HTF Bias BG")
+
+// ── Dashboard Table ──
+var table dashTable = na
+if i_showDashboard
+    if na(dashTable)
+        dashTable := table.new(position.top_right, 2, 9,
+             bgcolor=color.new(color.black, 70), border_color=color.new(color.gray, 50), border_width=1,
+             frame_color=color.new(color.gray, 50), frame_width=1)
+
+    if barstate.islast
+        table.cell(dashTable, 0, 0, "NQ-FP Framework", text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
+        table.cell(dashTable, 1, 0, "Status",           text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
+
+        stateStr   = isNoTradeState ? "NO TRADE" : isContinuationWindow ? "CONT WINDOW" : isMRWindow ? "MR WINDOW" : isPreEvent ? "PRE-EVENT" : "IN SESSION"
+        stateColor = isNoTradeState ? color.red : isContinuationWindow ? color.green : isMRWindow ? color.teal : color.gray
+        table.cell(dashTable, 0, 1, "Session State", text_color=color.silver, text_size=size.tiny)
+        table.cell(dashTable, 1, 1, stateStr,        text_color=stateColor,   text_size=size.tiny)
+
+        impStr   = openImpulseDir == 1 ? "BULLISH ▲" : openImpulseDir == -1 ? "BEARISH ▼" : "NEUTRAL"
+        impColor = openImpulseDir == 1 ? color.green  : openImpulseDir == -1 ? color.red   : color.gray
+        table.cell(dashTable, 0, 2, "Opening Impulse", text_color=color.silver, text_size=size.tiny)
+        table.cell(dashTable, 1, 2, impStr,            text_color=impColor,     text_size=size.tiny)
+
+        fpDistStr = not na(distToNearEdge) ? str.tostring(distToNearEdge, "#.##") + " pts" : "–"
+        table.cell(dashTable, 0, 3, "FP Edge Dist", text_color=color.silver, text_size=size.tiny)
+        table.cell(dashTable, 1, 3, fpDistStr,      text_color=color.white,  text_size=size.tiny)
+
+        extStr   = isOverExtended ? "OVER-EXT ⚠" : not na(extensionAtr) ? str.tostring(extensionAtr, "#.##") + "× ATR" : "–"
+        extColor = isOverExtended ? color.red : color.white
+        table.cell(dashTable, 0, 4, "Extension", text_color=color.silver, text_size=size.tiny)
+        table.cell(dashTable, 1, 4, extStr,      text_color=extColor,    text_size=size.tiny)
+
+        chopStr   = isChoppy ? "CHOPPY ⚠" : "CLEAN"
+        chopColor = isChoppy ? color.orange : color.green
+        table.cell(dashTable, 0, 5, "Chop Filter", text_color=color.silver, text_size=size.tiny)
+        table.cell(dashTable, 1, 5, chopStr,       text_color=chopColor,   text_size=size.tiny)
+
+        table.cell(dashTable, 0, 6, "Signals Today", text_color=color.silver, text_size=size.tiny)
+        table.cell(dashTable, 1, 6, str.tostring(sigsToday) + " / " + str.tostring(i_maxSigsPerDay),
+             text_color=maxSigsReached ? color.red : color.white, text_size=size.tiny)
+
+        htfStr = i_htfFilterMode == "Off" ? "OFF" : htfBullish ? "BULLISH" : htfBearish ? "BEARISH" : "NEUTRAL"
+        htfCol = i_htfFilterMode == "Off" ? color.gray : htfBullish ? color.green : htfBearish ? color.red : color.gray
+        table.cell(dashTable, 0, 7, "HTF Bias", text_color=color.silver, text_size=size.tiny)
+        table.cell(dashTable, 1, 7, htfStr,     text_color=htfCol,       text_size=size.tiny)
+
+        table.cell(dashTable, 0, 8, "Mode",    text_color=color.silver, text_size=size.tiny)
+        table.cell(dashTable, 1, 8, i_execMode,text_color=color.white,  text_size=size.tiny)
+
+// ─────────────────────────────────────────────────────────────
+// SECTION 17 — ALERTS
+// ─────────────────────────────────────────────────────────────
+
+alertcondition(sigA, title="OC Long",        message="NQ-FP: Opening Continuation LONG signal")
+alertcondition(sigB, title="OC Short",       message="NQ-FP: Opening Continuation SHORT signal")
+alertcondition(sigC, title="MR Long",        message="NQ-FP: Mean Reversion LONG signal")
+alertcondition(sigD, title="MR Short",       message="NQ-FP: Mean Reversion SHORT signal")
+alertcondition(sigE, title="News Reset Long", message="NQ-FP: News-Reset Mean Reversion LONG")
+alertcondition(sigF, title="News Reset Short",message="NQ-FP: News-Reset Mean Reversion SHORT")
+
+alertcondition(
+     (sigA and gradeToStr(gradeA_OC_Long)    == "A+") or
+     (sigB and gradeToStr(gradeB_OC_Short)   == "A+") or
+     (sigC and gradeToStr(gradeC_MR_Long)    == "A+") or
+     (sigD and gradeToStr(gradeD_MR_Short)   == "A+") or
+     (sigE and gradeToStr(gradeE_News_Long)  == "A+") or
+     (sigF and gradeToStr(gradeF_News_Short) == "A+"),
+     title="Any A+ Setup", message="NQ-FP: ⭐ A+ Grade Setup Detected")
+
+alertcondition(maxSigsReached, title="Max Signals Reached", message="NQ-FP: Daily signal cap reached")
+
+alertcondition(
+     i_execMode == "Challenge Pass-Rate" and anySig and
+     math.max(gradeA_OC_Long, math.max(gradeB_OC_Short, math.max(gradeC_MR_Long,
+       math.max(gradeD_MR_Short, math.max(gradeE_News_Long, gradeF_News_Short))))) == bestScoreToday,
+     title="Challenge Best Signal", message="NQ-FP: 🏆 Challenge Pass-Rate Best Signal Chosen")
+
+alertcondition(anyBuySig,  title="New Buy Entry Line",  message="NQ-FP: 🟢 BUY entry line placed")
+alertcondition(anySellSig, title="New Sell Entry Line", message="NQ-FP: 🔴 SELL entry line placed")
+
+bestScore = math.max(gradeA_OC_Long, math.max(gradeB_OC_Short, math.max(gradeC_MR_Long,
+     math.max(gradeD_MR_Short, math.max(gradeE_News_Long, gradeF_News_Short)))))
+if anySig and barstate.isconfirmed
+    alert("NQ-FP Signal | Score: " + str.tostring(bestScore) + " | " + gradeToStr(bestScore) + " | Bar: " + str.tostring(bar_index), alert.freq_once_per_bar_close)
+
+// ─────────────────────────────────────────────────────────────
+// END OF INDICATOR
+// ─────────────────────────────────────────────────────────────

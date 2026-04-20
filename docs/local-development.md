@@ -27,6 +27,7 @@ Optional root `.env` variables for the Paperclip approval relay:
 - `PAPERCLIP_API_BASE`
 - `PAPERCLIP_COMPANY_ID`
 - `PAPERCLIP_API_KEY`
+- `PAPERCLIP_UI_BASE`
 - `MAKE_WEBHOOK_URL`
 - `MAKE_WEBHOOK_API_KEY`
 
@@ -123,3 +124,7 @@ Reliability details and tuning knobs are documented in `docs/agent-reliability-l
 Dashboard route for relay observability:
 
 - `http://localhost:5173/paperclip-dashboard`
+
+OpenClaw Control UI:
+
+- `http://127.0.0.1:18789/`

@@ -10,7 +10,7 @@ MAKE_WEBHOOK_URL="${MAKE_WEBHOOK_URL:-https://hook.us2.make.com/lxdvbzq45ttmbf1j
 MAKE_WEBHOOK_API_KEY="${MAKE_WEBHOOK_API_KEY:-68037izex2mhjvcdyoukps1bw5q9grafl4nt}"
 
 MY_USER_ID="${PAPERCLIP_APPROVER_USER_ID:-local-board}"
-UI_BASE="${PAPERCLIP_UI_BASE:-http://127.0.0.1:3100}"
+UI_BASE="${PAPERCLIP_UI_BASE:-http://127.0.0.1:18789}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STATE_PATH="${PAPERCLIP_RELAY_STATE_PATH:-$SCRIPT_DIR/paperclip_to_make.state.json}"
