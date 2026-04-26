@@ -5,6 +5,7 @@ export type StorefrontRoute =
   | { kind: 'catalog' }
   | { kind: 'product'; slug: string }
   | { kind: 'leadMagnet' }
+  | { kind: 'paperclipDashboard' }
   | { kind: 'notFound'; pathname: string };
 
 const BRAND_NAME = 'Faceless Digital Assets';
@@ -22,6 +23,10 @@ export function resolveStorefrontRoute(pathname: string): StorefrontRoute {
 
   if (normalized === '/lead-magnet') {
     return { kind: 'leadMagnet' };
+  }
+
+  if (normalized === '/paperclip-dashboard') {
+    return { kind: 'paperclipDashboard' };
   }
 
   const productMatch = normalized.match(/^\/product\/([^/]+)$/);
@@ -45,6 +50,8 @@ export function getPageTitle(route: StorefrontRoute): string {
       return `${BRAND_NAME} | Product`;
     case 'leadMagnet':
       return `${BRAND_NAME} | Starter Pack`;
+    case 'paperclipDashboard':
+      return `${BRAND_NAME} | Paperclip Dashboard`;
     case 'notFound':
       return `${BRAND_NAME} | Not Found`;
     default:
@@ -68,6 +75,7 @@ function renderRoute(route: StorefrontRoute): string {
             <li><a href="/">Home</a></li>
             <li><a href="/catalog">Catalog</a></li>
             <li><a href="/lead-magnet">Starter Pack</a></li>
+            <li><a href="/paperclip-dashboard">Paperclip Dashboard</a></li>
           </ul>
         </nav>
       </header>
@@ -91,6 +99,7 @@ function renderPageBody(route: StorefrontRoute): string {
           <div class="hero-actions">
             <a class="button button-primary" href="/catalog">Browse Catalog</a>
             <a class="button" href="/lead-magnet">Get Free Starter Pack</a>
+            <a class="button" href="/paperclip-dashboard">Open Paperclip Dashboard</a>
           </div>
         </section>
       `;
@@ -158,6 +167,43 @@ function renderPageBody(route: StorefrontRoute): string {
             <button class="button button-primary" type="submit">Send Starter Pack</button>
           </form>
           <p class="status-message" data-lead-status aria-live="polite"></p>
+        </section>
+      `;
+    case 'paperclipDashboard':
+      return `
+        <section>
+          <h1>Paperclip Relay Dashboard</h1>
+          <p>Live reliability view for the Paperclip-to-Make approval relay.</p>
+          <div class="dashboard-actions">
+            <button class="button button-primary" type="button" data-dashboard-refresh>Refresh Metrics</button>
+          </div>
+          <p class="status-message" data-dashboard-status aria-live="polite"></p>
+          <div class="dashboard-grid">
+            <article class="dashboard-card">
+              <h2>Queue Health</h2>
+              <p><strong>Queue Depth:</strong> <span data-dashboard-queue-depth>--</span></p>
+              <p><strong>Next Attempt:</strong> <span data-dashboard-next-at>--</span></p>
+              <p><strong>Dead Letter:</strong> <span data-dashboard-dead-letter>--</span></p>
+            </article>
+            <article class="dashboard-card">
+              <h2>Circuit & Lock</h2>
+              <p><strong>Circuit Open:</strong> <span data-dashboard-circuit-open>--</span></p>
+              <p><strong>Failures:</strong> <span data-dashboard-circuit-failures>--</span></p>
+              <p><strong>Lock Owner:</strong> <span data-dashboard-lock-owner>--</span></p>
+            </article>
+            <article class="dashboard-card">
+              <h2>Delivery Totals</h2>
+              <p><strong>Total Runs:</strong> <span data-dashboard-total-runs>--</span></p>
+              <p><strong>Forwarded:</strong> <span data-dashboard-total-forwarded>--</span></p>
+              <p><strong>Retries:</strong> <span data-dashboard-total-retries>--</span></p>
+              <p><strong>Final Failures:</strong> <span data-dashboard-total-failures>--</span></p>
+            </article>
+          </div>
+          <p class="dashboard-meta">
+            <strong>State File:</strong> <code data-dashboard-state-path>--</code><br />
+            <strong>Last Run:</strong> <span data-dashboard-last-run>--</span><br />
+            <strong>Updated:</strong> <span data-dashboard-generated-at>--</span>
+          </p>
         </section>
       `;
     case 'notFound':
@@ -231,6 +277,10 @@ function bindPageInteractions(root: HTMLElement, route: StorefrontRoute): void {
 
   if (route.kind === 'leadMagnet') {
     bindLeadCaptureForm(root);
+  }
+
+  if (route.kind === 'paperclipDashboard') {
+    bindPaperclipDashboard(root);
   }
 }
 
@@ -330,6 +380,70 @@ function bindLeadCaptureForm(root: HTMLElement): void {
   });
 }
 
+function bindPaperclipDashboard(root: HTMLElement): void {
+  const status = root.querySelector<HTMLElement>('[data-dashboard-status]');
+  const refreshButton = root.querySelector<HTMLButtonElement>('[data-dashboard-refresh]');
+  if (!status || !refreshButton) {
+    return;
+  }
+
+  const load = async () => {
+    refreshButton.disabled = true;
+    setStatus(status, 'Loading relay metrics...', false);
+
+    try {
+      const response = await fetch('/api/paperclip/relay-status', {
+        method: 'GET',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      const payload = await parseJsonResponse(response);
+      if (!response.ok) {
+        const apiError = typeof payload?.error === 'string' ? payload.error : 'Request failed.';
+        throw new Error(apiError);
+      }
+
+      const relay = isRecord(payload?.relay) ? payload.relay : null;
+      if (!relay) {
+        throw new Error('Relay payload is missing.');
+      }
+
+      updateDashboardValue(root, 'queue-depth', asNumberText(relay.queueDepth));
+      updateDashboardValue(root, 'next-at', formatDateTime(relay.nextAttemptAt));
+      updateDashboardValue(root, 'dead-letter', asNumberText(relay.deadLetterDepth));
+
+      const circuit = isRecord(relay.circuit) ? relay.circuit : null;
+      updateDashboardValue(root, 'circuit-open', asYesNo(circuit?.isOpen));
+      updateDashboardValue(root, 'circuit-failures', asNumberText(circuit?.consecutiveFailures));
+
+      const lock = isRecord(relay.lock) ? relay.lock : null;
+      updateDashboardValue(root, 'lock-owner', asString(lock?.owner, 'none'));
+
+      const metrics = isRecord(relay.metrics) ? relay.metrics : null;
+      updateDashboardValue(root, 'total-runs', asNumberText(metrics?.totalRuns));
+      updateDashboardValue(root, 'total-forwarded', asNumberText(metrics?.totalForwarded));
+      updateDashboardValue(root, 'total-retries', asNumberText(metrics?.totalRetryScheduled));
+      updateDashboardValue(root, 'total-failures', asNumberText(metrics?.totalFinalFailures));
+      updateDashboardValue(root, 'state-path', asString(relay.statePath, '--'));
+      updateDashboardValue(root, 'last-run', formatDateTime(metrics?.lastRunAt));
+      updateDashboardValue(root, 'generated-at', formatDateTime(relay.generatedAt));
+
+      setStatus(status, 'Relay metrics refreshed.', false, true);
+    } catch (error) {
+      setStatus(status, `Dashboard refresh failed: ${toErrorMessage(error)}`, true);
+    } finally {
+      refreshButton.disabled = false;
+    }
+  };
+
+  refreshButton.addEventListener('click', () => {
+    void load();
+  });
+  void load();
+  globalThis.setInterval(() => {
+    void load();
+  }, 15_000);
+}
+
 function setFormBusy(form: HTMLFormElement, busy: boolean): void {
   const controls = form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>(
     'input, select, button'
@@ -350,6 +464,15 @@ function setStatus(
   element.classList.toggle('is-success', isSuccess);
 }
 
+function updateDashboardValue(root: HTMLElement, key: string, value: string): void {
+  const target = root.querySelector<HTMLElement>(`[data-dashboard-${key}]`);
+  if (!target) {
+    return;
+  }
+
+  target.textContent = value;
+}
+
 async function parseJsonResponse(response: Response): Promise<Record<string, unknown> | null> {
   try {
     const payload = (await response.json()) as unknown;
@@ -365,4 +488,29 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Unexpected error.';
+}
+
+function asYesNo(value: unknown): string {
+  return value === true ? 'yes' : 'no';
+}
+
+function asString(value: unknown, fallback: string): string {
+  return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
+}
+
+function asNumberText(value: unknown): string {
+  return typeof value === 'number' && Number.isFinite(value) ? String(value) : '0';
+}
+
+function formatDateTime(value: unknown): string {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return '--';
+  }
+
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) {
+    return value;
+  }
+
+  return new Date(parsed).toLocaleString();
 }

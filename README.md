@@ -27,12 +27,14 @@ Monorepo for storefront MVP implementation, shared packages, and local dev workf
 - `/catalog` - product catalog skeleton
 - `/product/:slug` - product detail skeleton
 - `/lead-magnet` - lead capture skeleton
+- `/paperclip-dashboard` - relay reliability metrics dashboard
 
 ## API Routes (Vertical Slice)
 
 - `POST /api/stripe/checkout-session` - validates product/email and creates Stripe Checkout Session
 - `POST /api/stripe/webhook` - verifies Stripe signature and stores placeholder order records
 - `POST /api/lead-magnet` - validates and stores placeholder lead records
+- `GET /api/paperclip/relay-status` - returns Paperclip relay queue/circuit/metrics snapshot
 
 ## Local Integrations
 
@@ -41,6 +43,9 @@ Monorepo for storefront MVP implementation, shared packages, and local dev workf
 - Supabase local stack:
   - `pnpm supabase:start`
   - `pnpm supabase:stop`
+- Paperclip approval relay reliability layer:
+  - `powershell -ExecutionPolicy Bypass -File scripts\paperclip_to_make.ps1`
+  - details: `docs/agent-reliability-layer.md`
 
 Detailed local integration notes are in `docs/local-development.md`.
 

@@ -163,6 +163,38 @@ h1 {
   margin: 1rem 0;
 }
 
+.dashboard-actions {
+  margin: 0.7rem 0 0.4rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin: 0.9rem 0 0.7rem;
+}
+
+.dashboard-card {
+  border: 1px solid #d2d6dc;
+  border-radius: 14px;
+  padding: 0.8rem 0.9rem;
+  background: #f8fafc;
+}
+
+.dashboard-card h2 {
+  margin: 0 0 0.55rem;
+  font-size: 1rem;
+}
+
+.dashboard-card p {
+  margin: 0.32rem 0;
+}
+
+.dashboard-meta {
+  margin: 0.35rem 0 0;
+  color: #2d3e52;
+}
+
 .site-footer {
   border-top: 1px solid #e2e7ee;
   padding: 0.9rem 1.25rem 1.1rem;

@@ -4,6 +4,7 @@ import {
   type OrderInput,
   type PlaceholderPersistence
 } from './persistence';
+import { readRelayStatusSnapshot } from './relayStatus';
 import { createStripeCheckoutSession, verifyStripeWebhookSignature } from './stripe';
 import { parseCheckoutRequest, parseLeadCaptureRequest } from './validators';
 
@@ -11,6 +12,7 @@ interface HandlerEnvironment {
   appBaseUrl: string;
   stripeSecretKey: string;
   stripeWebhookSecret: string;
+  paperclipRelayStatePath: string;
 }
 
 export interface ApiHandlerDependencies {
@@ -136,6 +138,17 @@ export async function handleApiRequest(
     });
   }
 
+  if (url.pathname === '/api/paperclip/relay-status') {
+    if (request.method !== 'GET') {
+      return methodNotAllowed(['GET']);
+    }
+
+    const relay = await readRelayStatusSnapshot({
+      statePath: environment.paperclipRelayStatePath
+    });
+    return json(200, { relay });
+  }
+
   return null;
 }
 
@@ -147,6 +160,11 @@ function resolveEnvironment(overrides?: Partial<HandlerEnvironment>): HandlerEnv
     stripeWebhookSecret: (
       overrides?.stripeWebhookSecret ??
       process.env.STRIPE_WEBHOOK_SECRET ??
+      ''
+    ).trim(),
+    paperclipRelayStatePath: (
+      overrides?.paperclipRelayStatePath ??
+      process.env.PAPERCLIP_RELAY_STATE_PATH ??
       ''
     ).trim()
   };

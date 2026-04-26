@@ -1,4 +1,7 @@
 import { createHmac } from 'node:crypto';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   handleApiRequest,
@@ -146,6 +149,115 @@ describe('handleApiRequest', () => {
     expect(response?.status).toBe(200);
     expect(persistence.orders).toHaveLength(1);
     expect(persistence.orders[0]?.checkoutSessionId).toBe('cs_test_123');
+  });
+
+  it('returns relay dashboard defaults when relay state file is missing', async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'relay-state-'));
+    const missingStatePath = path.join(tempDir, 'paperclip_to_make.state.json');
+
+    try {
+      const response = await handleApiRequest(
+        new Request('http://localhost:5173/api/paperclip/relay-status', {
+          method: 'GET'
+        }),
+        {
+          environment: {
+            appBaseUrl: 'http://localhost:5173',
+            paperclipRelayStatePath: missingStatePath
+          }
+        }
+      );
+
+      expect(response?.status).toBe(200);
+      expect(getPayload(response)?.relay).toMatchObject({
+        stateExists: false,
+        queueDepth: 0,
+        deadLetterDepth: 0,
+        circuit: {
+          isOpen: false,
+          consecutiveFailures: 0
+        }
+      });
+    } finally {
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('returns relay dashboard metrics from persisted relay state', async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'relay-state-'));
+    const statePath = path.join(tempDir, 'paperclip_to_make.state.json');
+    const lockPath = `${statePath}.lock`;
+
+    try {
+      await writeFile(
+        statePath,
+        JSON.stringify({
+          queue: [{ id: 'q1', nextAttemptAt: '2026-04-11T18:00:00.000Z' }],
+          deadLetter: [{ id: 'd1' }],
+          circuit: {
+            consecutiveFailures: 3,
+            openUntil: '2030-01-01T00:00:00.000Z',
+            lastError: 'status=429 throttled'
+          },
+          metrics: {
+            lastRunAt: '2026-04-11T17:45:00.000Z',
+            lastRunId: 'run_test',
+            totalRuns: 40,
+            totalCandidates: 250,
+            totalEnqueued: 70,
+            totalForwarded: 65,
+            totalRetryScheduled: 8,
+            totalFinalFailures: 2,
+            totalDropped: 1
+          }
+        }),
+        'utf8'
+      );
+      await writeFile(
+        lockPath,
+        JSON.stringify({
+          owner: 'test-owner',
+          expiresAt: '2030-01-01T00:10:00.000Z'
+        }),
+        'utf8'
+      );
+
+      const response = await handleApiRequest(
+        new Request('http://localhost:5173/api/paperclip/relay-status', {
+          method: 'GET'
+        }),
+        {
+          environment: {
+            appBaseUrl: 'http://localhost:5173',
+            paperclipRelayStatePath: statePath
+          }
+        }
+      );
+
+      expect(response?.status).toBe(200);
+      expect(getPayload(response)?.relay).toMatchObject({
+        stateExists: true,
+        queueDepth: 1,
+        deadLetterDepth: 1,
+        nextAttemptAt: '2026-04-11T18:00:00.000Z',
+        lock: {
+          present: true,
+          owner: 'test-owner'
+        },
+        circuit: {
+          isOpen: true,
+          consecutiveFailures: 3,
+          lastError: 'status=429 throttled'
+        },
+        metrics: {
+          lastRunId: 'run_test',
+          totalRuns: 40,
+          totalForwarded: 65
+        }
+      });
+    } finally {
+      await rm(tempDir, { recursive: true, force: true });
+    }
   });
 });
 

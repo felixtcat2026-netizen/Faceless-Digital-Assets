@@ -9,6 +9,7 @@ describe('resolveStorefrontRoute', () => {
   it('routes known static pages', () => {
     expect(resolveStorefrontRoute('/catalog')).toEqual({ kind: 'catalog' });
     expect(resolveStorefrontRoute('/lead-magnet')).toEqual({ kind: 'leadMagnet' });
+    expect(resolveStorefrontRoute('/paperclip-dashboard')).toEqual({ kind: 'paperclipDashboard' });
   });
 
   it('routes product detail pages by slug', () => {
@@ -47,6 +48,19 @@ describe('renderStorefront', () => {
     expect(html).toContain('Send Starter Pack');
     expect(html).toContain('data-lead-form');
   });
+
+  it('renders the paperclip relay dashboard', () => {
+    const html = renderStorefront('/paperclip-dashboard');
+    expect(html).toContain('Paperclip Relay Dashboard');
+    expect(html).toContain('data-dashboard-refresh');
+    expect(html).toContain('data-dashboard-queue-depth');
+  });
+
+  it('surfaces a direct dashboard link on the home page', () => {
+    const html = renderStorefront('/');
+    expect(html).toContain('/paperclip-dashboard');
+    expect(html).toContain('Open Paperclip Dashboard');
+  });
 });
 
 describe('getPageTitle', () => {
@@ -55,5 +69,6 @@ describe('getPageTitle', () => {
     expect(getPageTitle({ kind: 'catalog' })).toContain('Catalog');
     expect(getPageTitle({ kind: 'product', slug: 'abc' })).toContain('Product');
     expect(getPageTitle({ kind: 'leadMagnet' })).toContain('Starter Pack');
+    expect(getPageTitle({ kind: 'paperclipDashboard' })).toContain('Paperclip Dashboard');
   });
 });

@@ -22,6 +22,14 @@ Required root `.env` variables for the checkout/webhook/lead vertical slice:
 - `STRIPE_WEBHOOK_SECRET`
 - `PLACEHOLDER_DATA_DIR` (optional, defaults to `.local-data`)
 
+Optional root `.env` variables for the Paperclip approval relay:
+
+- `PAPERCLIP_API_BASE`
+- `PAPERCLIP_COMPANY_ID`
+- `PAPERCLIP_API_KEY`
+- `MAKE_WEBHOOK_URL`
+- `MAKE_WEBHOOK_API_KEY`
+
 ## Day-to-Day Commands
 
 ```bash
@@ -59,6 +67,7 @@ Available API routes (served by Vite middleware in local dev and preview):
 - `POST /api/stripe/checkout-session`
 - `POST /api/stripe/webhook`
 - `POST /api/lead-magnet`
+- `GET /api/paperclip/relay-status`
 
 Manual local test workflow:
 
@@ -94,3 +103,23 @@ Expected local defaults:
 - Keys loaded from `.env` and `apps/web/.env`
 
 For dev cloud environments, keep the same variable names and swap only values. Never commit real keys.
+
+## Paperclip Approval Relay Reliability Layer
+
+Run relay:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\paperclip_to_make.ps1
+```
+
+Dry-run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\paperclip_to_make.ps1 -DryRun
+```
+
+Reliability details and tuning knobs are documented in `docs/agent-reliability-layer.md`.
+
+Dashboard route for relay observability:
+
+- `http://localhost:5173/paperclip-dashboard`
