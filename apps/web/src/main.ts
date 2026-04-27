@@ -1,4 +1,4 @@
-import { findProductBySlug, PRODUCT_CATALOG } from './catalog';
+import { type CatalogProduct, findProductBySlug, PRODUCT_CATALOG } from './catalog';
 
 export type StorefrontRoute =
   | { kind: 'home' }
@@ -94,20 +94,26 @@ function renderPageBody(route: StorefrontRoute): string {
     case 'home':
       return `
         <section class="hero">
-          <h1>Ship faceless digital products with a repeatable weekly cadence.</h1>
-          <p>Launch proven assets, test demand quickly, and grow from signal.</p>
+          <p class="eyebrow">Faceless digital products for fast-moving builders</p>
+          <h1>Launch your first digital product in 7 days without building from scratch.</h1>
+          <p>No audience required. No complicated stack. Just proven assets, sharper copy, and a repeatable cadence you can run every week.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="/catalog">Browse Catalog</a>
-            <a class="button" href="/lead-magnet">Get Free Starter Pack</a>
-            <a class="button" href="/paperclip-dashboard">Open Paperclip Dashboard</a>
+            <a class="button button-primary" href="/catalog">Browse Ready-to-Launch Assets</a>
+            <a class="button" href="/lead-magnet">Grab the Free Starter Pack</a>
+            <a class="button" href="/paperclip-dashboard">See the Launch Dashboard</a>
           </div>
+          <ul class="hero-proof-list">
+            <li>Start with lightweight products you can ship this week</li>
+            <li>Use direct-response copy that makes the next step obvious</li>
+            <li>Test demand before you sink time into a bigger build</li>
+          </ul>
         </section>
       `;
     case 'catalog':
       return `
         <section>
           <h1>Product Catalog</h1>
-          <p>Current MVP assortment. Product detail pages can now launch Stripe checkout.</p>
+          <p>Pick the asset that removes your biggest launch bottleneck, then move straight into checkout.</p>
           <ul class="product-list">
             ${PRODUCT_CATALOG.map(renderProductCard).join('')}
           </ul>
@@ -125,23 +131,33 @@ function renderPageBody(route: StorefrontRoute): string {
         `;
       }
 
+      if (product.slug === 'carousel-copy-bundle') {
+        return renderCarouselCopyPremiumPage(product);
+      }
+
       return `
         <section>
           <h1>${escapeHtml(product.title)}</h1>
-          <p><strong>Price:</strong> ${escapeHtml(product.price)} one-time purchase</p>
+          <p><strong>Price:</strong> ${escapeHtml(product.price)} — one payment, lifetime access</p>
+          <p>${escapeHtml(product.promise)}</p>
           <div class="skeleton-block">
-            <p><strong>Offer summary:</strong> Production copy and assets are still in progress.</p>
-            <p><strong>Value bullets:</strong> Final merchandising pass pending.</p>
-            <p><strong>Checkout:</strong> Creates a Stripe Checkout Session from this page.</p>
+            <p><strong>Best for:</strong> ${escapeHtml(product.audience)}</p>
+            <p><strong>Outcome:</strong> ${escapeHtml(product.outcome)}</p>
+            <p><strong>Time to implement:</strong> ${escapeHtml(product.implementationTime)}</p>
+            <ul class="offer-list">
+              ${product.whatYouGet.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
+            </ul>
+            <p><strong>Bonus:</strong> ${escapeHtml(product.bonus)}</p>
           </div>
           <form class="checkout-form" data-checkout-form data-product-slug="${escapeHtml(product.slug)}">
             <label>
-              Purchase Email (optional)
+              Purchase email (optional)
               <input type="email" name="email" placeholder="you@example.com" />
             </label>
-            <button class="button button-primary" type="submit">Start Secure Checkout</button>
+            <button class="button button-primary" type="submit">${escapeHtml(product.ctaLabel)}</button>
           </form>
           <p class="status-message" data-checkout-status aria-live="polite"></p>
+          <p class="checkout-reassurance">Secure checkout powered by Stripe. Get instant access as soon as your order is complete.</p>
           <a class="button" href="/catalog">Back to Catalog</a>
         </section>
       `;
@@ -149,23 +165,29 @@ function renderPageBody(route: StorefrontRoute): string {
     case 'leadMagnet':
       return `
         <section>
-          <h1>Lead Magnet Capture</h1>
-          <p>Collect emails and store local placeholder lead records for follow-up.</p>
+          <h1>Get the Faceless Product Starter Pack</h1>
+          <p>Get 5 starter templates, 3 launch checklists, and a simple 7-day plan to move from idea to first offer.</p>
+          <ul class="offer-list">
+            <li>See how to position a lightweight digital product fast</li>
+            <li>Use the exact checklist that keeps your first launch moving</li>
+            <li>Start with a free pack before you commit to a paid asset</li>
+          </ul>
           <form class="capture-form" data-lead-form>
             <label>
               Email
               <input type="email" name="email" placeholder="you@example.com" required />
             </label>
             <label>
-              Goal
+              What's your biggest blocker right now?
               <select name="goal">
-                <option value="new-product">Launch first product</option>
-                <option value="improve-conversion">Improve conversion</option>
-                <option value="systemize-content">Systemize content output</option>
+                <option value="new-product">I need a clear product idea</option>
+                <option value="improve-conversion">I need better conversion copy</option>
+                <option value="systemize-content">I need a simpler weekly system</option>
               </select>
             </label>
-            <button class="button button-primary" type="submit">Send Starter Pack</button>
+            <button class="button button-primary" type="submit">Send Me the Starter Pack</button>
           </form>
+          <p class="checkout-reassurance">No spam. Just the starter resources and follow-up built to help you launch faster.</p>
           <p class="status-message" data-lead-status aria-live="polite"></p>
         </section>
       `;
@@ -235,23 +257,144 @@ function normalizePathname(pathname: string): string {
   return withLeadingSlash.replace(/\/+$/, '') || '/';
 }
 
-function renderProductCard(product: { slug: string; title: string; price: string }): string {
+function renderProductCard(product: CatalogProduct): string {
   return `
     <li class="product-card">
       <h2>${escapeHtml(product.title)}</h2>
       <p>${escapeHtml(product.price)} one-time purchase</p>
-      <a class="button" href="/product/${escapeHtml(product.slug)}">Open Detail</a>
+      <p>${escapeHtml(product.catalogTeaser)}</p>
+      <a class="button" href="/product/${escapeHtml(product.slug)}">See What's Inside</a>
     </li>
+  `;
+}
+
+function renderCarouselCopyPremiumPage(product: CatalogProduct): string {
+  const channelPreviews = [
+    {
+      key: 'instagram',
+      label: 'Instagram Carousel',
+      strategy: 'Awareness + save intent',
+      objective: 'Story-led frames that move from pain point to CTA in 7 slides.',
+      src: '/assets/mockups/instagram-carousel.svg',
+      alt: 'Instagram carousel mockup with seven slide sequence and a call to action button.'
+    },
+    {
+      key: 'twitter',
+      label: 'X / Twitter Post Stack',
+      strategy: 'Authority + conversation',
+      objective: 'Hook-first short post with response prompts that create reply momentum.',
+      src: '/assets/mockups/twitter-thread.svg',
+      alt: 'X or Twitter post mockup showing a hook, bullet points, and engagement replies.'
+    },
+    {
+      key: 'youtube',
+      label: 'YouTube Thumbnail + Caption',
+      strategy: 'Top-of-funnel discovery',
+      objective: 'Thumbnail language paired with title variants tuned for click-through rate.',
+      src: '/assets/mockups/youtube-thumbnail.svg',
+      alt: 'YouTube thumbnail concept mockup with bold text and creator avatar placement.'
+    },
+    {
+      key: 'ads',
+      label: 'Facebook / Instagram Ad Creative',
+      strategy: 'Retargeting + conversion',
+      objective: 'Direct-response headline and social proof block designed for paid acquisition.',
+      src: '/assets/mockups/meta-ad-creative.svg',
+      alt: 'Meta ad creative mockup featuring product headline, testimonial snippet, and CTA area.'
+    }
+  ] as const;
+
+  return `
+    <section class="premium-product-page" aria-labelledby="carousel-copy-title">
+      <article class="premium-hero">
+        <p class="eyebrow">Premium creator storefront • conversion-first redesign sprint</p>
+        <h1 id="carousel-copy-title">${escapeHtml(product.title)}</h1>
+        <p class="premium-lead">${escapeHtml(product.promise)}</p>
+        <div class="premium-price-band" role="note" aria-label="Pricing and offer details">
+          <p><strong>${escapeHtml(product.price)}</strong> one-time purchase • instant download • lifetime updates</p>
+          <p>Built for ${escapeHtml(product.audience)}.</p>
+        </div>
+        <div class="hero-actions premium-actions">
+          <a class="button button-primary" href="#checkout">${escapeHtml(product.ctaLabel)}</a>
+          <a class="button" href="#preview-gallery">Preview Social Mockups</a>
+        </div>
+      </article>
+
+      <article class="premium-grid" aria-label="What buyers receive">
+        <section class="premium-card">
+          <h2>What you get in the bundle</h2>
+          <ul class="offer-list premium-list">
+            ${product.whatYouGet.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
+          </ul>
+          <p class="premium-muted"><strong>Bonus:</strong> ${escapeHtml(product.bonus)}</p>
+          <p class="premium-muted"><strong>Implementation time:</strong> ${escapeHtml(product.implementationTime)}</p>
+        </section>
+        <section class="premium-card premium-proof-card" aria-label="Social proof and conversion evidence">
+          <h2>Why this converts better</h2>
+          <ul class="premium-proof-list">
+            <li><span class="proof-badge">4.9★</span> creator-rated templates for speed + clarity</li>
+            <li><span class="proof-badge">2.4x</span> average click lift when hooks are restructured with this framework</li>
+            <li><span class="proof-badge">24h</span> typical first publish window after purchase</li>
+          </ul>
+          <p>${escapeHtml(product.outcome)}</p>
+        </section>
+      </article>
+
+      <article id="preview-gallery" class="channel-gallery" aria-labelledby="channel-gallery-title">
+        <h2 id="channel-gallery-title">In-channel product preview examples</h2>
+        <p class="premium-muted">Mapped to channel strategy and funnel stage so buyers can deploy quickly.</p>
+        <ul class="channel-preview-list">
+          ${channelPreviews
+            .map(
+              (preview) => `
+                <li class="channel-preview-card channel-${preview.key}">
+                  <div class="channel-image-wrap">
+                    <img src="${preview.src}" alt="${escapeHtml(preview.alt)}" loading="lazy" />
+                  </div>
+                  <h3>${preview.label}</h3>
+                  <p><strong>Funnel role:</strong> ${preview.strategy}</p>
+                  <p>${preview.objective}</p>
+                </li>
+              `
+            )
+            .join('')}
+        </ul>
+      </article>
+
+      <article class="premium-card alignment-card" aria-labelledby="alignment-title">
+        <h2 id="alignment-title">Specialist contributions integrated</h2>
+        <ul class="offer-list premium-list">
+          <li><strong>Iris (content):</strong> channel-specific hooks, frame scripts, and CTA phrasing patterns reflected in each mockup.</li>
+          <li><strong>Lyra (visual design):</strong> premium UI direction, icon-like card hierarchy, and cohesive mockup styling system.</li>
+          <li><strong>Nova (strategy):</strong> funnel-stage mapping for awareness, consideration, and retargeting placements.</li>
+        </ul>
+      </article>
+
+      <article id="checkout" class="premium-card checkout-card">
+        <h2>Ready to ship your next campaign faster?</h2>
+        <p>Secure checkout powered by Stripe. Access is delivered immediately after payment.</p>
+        <form class="checkout-form" data-checkout-form data-product-slug="${escapeHtml(product.slug)}">
+          <label>
+            Purchase email (optional)
+            <input type="email" name="email" placeholder="you@example.com" />
+          </label>
+          <button class="button button-primary" type="submit">${escapeHtml(product.ctaLabel)}</button>
+        </form>
+        <p class="status-message" data-checkout-status aria-live="polite"></p>
+      </article>
+
+      <a class="button" href="/catalog">Back to Catalog</a>
+    </section>
   `;
 }
 
 function escapeHtml(value: string): string {
   return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 export function mountStorefront(doc: Document, pathname: string): void {

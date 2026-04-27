@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Instagram carousel mockup</title>
+  <desc id="desc">Seven-frame Instagram carousel preview with hook headline, body points, and CTA frame.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="#eef2ff"/>
+  <rect x="70" y="70" width="1060" height="760" rx="32" fill="url(#bg)"/>
+  <text x="130" y="145" fill="#dbeafe" font-size="40" font-family="Arial">Instagram Carousel • 7-slide story arc</text>
+  <g transform="translate(120 200)">
+    <rect width="920" height="520" rx="22" fill="#ffffff"/>
+    <rect x="32" y="36" width="856" height="448" rx="16" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="70" y="95" fill="#0f172a" font-size="34" font-family="Arial" font-weight="700">Slide 1 Hook: "Still writing posts from scratch?"</text>
+    <text x="70" y="145" fill="#334155" font-size="24" font-family="Arial">Slides 2-6: pain → framework → proof → CTA setup</text>
+    <rect x="70" y="190" width="780" height="220" rx="14" fill="#e0e7ff"/>
+    <text x="100" y="250" fill="#1e3a8a" font-size="28" font-family="Arial" font-weight="700">Final Slide CTA</text>
+    <text x="100" y="295" fill="#1e293b" font-size="22" font-family="Arial">"Comment READY and I will DM the template pack"</text>
+    <rect x="100" y="330" width="290" height="52" rx="26" fill="#1d4ed8"/>
+    <text x="145" y="364" fill="#ffffff" font-size="22" font-family="Arial" font-weight="700">Save & Share</text>
+  </g>
+</svg>

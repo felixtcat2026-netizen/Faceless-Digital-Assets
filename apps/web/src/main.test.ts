@@ -35,17 +35,25 @@ describe('renderStorefront', () => {
     expect(html).toContain('/product/creator-launch-kit');
   });
 
-  it('renders the product detail skeleton', () => {
+  it('renders the premium product detail redesign with channel previews', () => {
     const html = renderStorefront('/product/carousel-copy-bundle');
     expect(html).toContain('Carousel Copy Bundle');
+    expect(html).toContain('Skip the drafting spiral and ship conversion-minded carousel copy in minutes instead of hours.');
+    expect(html).toContain('Download the Copy Bundle');
+    expect(html).toContain('In-channel product preview examples');
+    expect(html).toContain('/assets/mockups/instagram-carousel.svg');
+    expect(html).toContain('/assets/mockups/twitter-thread.svg');
+    expect(html).toContain('/assets/mockups/youtube-thumbnail.svg');
+    expect(html).toContain('/assets/mockups/meta-ad-creative.svg');
+    expect(html).toContain('Specialist contributions integrated');
     expect(html).toContain('carousel-copy-bundle');
-    expect(html).toContain('Start Secure Checkout');
   });
 
-  it('renders the lead magnet capture skeleton', () => {
+  it('renders the lead magnet opt-in copy', () => {
     const html = renderStorefront('/lead-magnet');
-    expect(html).toContain('Lead Magnet Capture');
-    expect(html).toContain('Send Starter Pack');
+    expect(html).toContain('Get the Faceless Product Starter Pack');
+    expect(html).toContain('Send Me the Starter Pack');
+    expect(html).toContain("What's your biggest blocker right now?");
     expect(html).toContain('data-lead-form');
   });
 
@@ -59,7 +67,7 @@ describe('renderStorefront', () => {
   it('surfaces a direct dashboard link on the home page', () => {
     const html = renderStorefront('/');
     expect(html).toContain('/paperclip-dashboard');
-    expect(html).toContain('Open Paperclip Dashboard');
+    expect(html).toContain('See the Launch Dashboard');
   });
 });
 

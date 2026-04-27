@@ -206,6 +206,125 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.premium-product-page {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.premium-hero {
+  background: linear-gradient(150deg, #081a31 0%, #15395f 48%, #1e5d87 100%);
+  color: #f4f9ff;
+  border-radius: 18px;
+  padding: 1.2rem;
+  border: 1px solid #1f4d73;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #b9ddff;
+}
+
+.premium-lead {
+  font-size: 1.04rem;
+  line-height: 1.55;
+  margin: 0.5rem 0 0.8rem;
+}
+
+.premium-price-band {
+  background: #ffffff14;
+  border: 1px solid #ffffff36;
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.premium-price-band p {
+  margin: 0.2rem 0;
+}
+
+.premium-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.premium-card {
+  border: 1px solid #cdd7e3;
+  border-radius: 16px;
+  padding: 0.95rem;
+  background: #fff;
+}
+
+.premium-muted {
+  color: #314861;
+}
+
+.premium-proof-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.2rem 0 0.8rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.proof-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  padding: 0.15rem 0.45rem;
+  margin-right: 0.45rem;
+  border-radius: 999px;
+  background: #0f4f78;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.76rem;
+}
+
+.channel-gallery h2,
+.alignment-card h2,
+.checkout-card h2 {
+  margin-top: 0;
+}
+
+.channel-preview-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.7rem 0 0;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.channel-preview-card {
+  border: 1px solid #ced9e8;
+  border-radius: 14px;
+  padding: 0.7rem;
+  background: #fbfcff;
+}
+
+.channel-preview-card h3 {
+  margin: 0.55rem 0 0.35rem;
+  font-size: 1rem;
+}
+
+.channel-image-wrap {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #d3dce8;
+  background: #fff;
+}
+
+.channel-image-wrap img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 @media (max-width: 640px) {
   #app {
     padding: 0.8rem;
@@ -216,5 +335,9 @@ button:disabled {
   .site-footer {
     padding-left: 0.95rem;
     padding-right: 0.95rem;
+  }
+
+  .premium-hero {
+    padding: 0.95rem;
   }
 }

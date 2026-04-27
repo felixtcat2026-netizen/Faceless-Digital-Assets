@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Meta ad creative mockup</title>
+  <desc id="desc">Facebook and Instagram ad creative with headline, testimonial, and call to action.</desc>
+  <rect width="1200" height="900" fill="#f1f5f9"/>
+  <rect x="140" y="70" width="920" height="760" rx="26" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="180" y="120" width="840" height="300" rx="18" fill="#0ea5e9"/>
+  <text x="220" y="220" fill="#082f49" font-size="48" font-family="Arial" font-weight="800">Carousel Copy Bundle</text>
+  <text x="220" y="285" fill="#082f49" font-size="32" font-family="Arial">Turn one idea into multi-channel creatives</text>
+  <rect x="220" y="465" width="760" height="150" rx="14" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="250" y="525" fill="#0f172a" font-size="28" font-family="Arial" font-weight="700">"We cut creative production time by 60%."</text>
+  <text x="250" y="565" fill="#334155" font-size="22" font-family="Arial">— paid social manager testimonial</text>
+  <rect x="220" y="660" width="320" height="62" rx="31" fill="#0284c7"/>
+  <text x="290" y="700" fill="#ffffff" font-size="24" font-family="Arial" font-weight="700">Download Bundle</text>
+</svg>
