@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">X Twitter thread mockup</title>
+  <desc id="desc">Hook-first X thread preview with bullet stack and conversation replies.</desc>
+  <rect width="1200" height="900" fill="#f8fafc"/>
+  <rect x="90" y="80" width="1020" height="740" rx="30" fill="#0f172a"/>
+  <text x="140" y="145" fill="#93c5fd" font-size="38" font-family="Arial">X / Twitter Post Stack</text>
+  <rect x="140" y="190" width="920" height="220" rx="20" fill="#111827" stroke="#334155"/>
+  <text x="180" y="250" fill="#e2e8f0" font-size="32" font-family="Arial" font-weight="700">Hook: Most creators are one CTA away from better conversion.</text>
+  <text x="180" y="300" fill="#cbd5e1" font-size="24" font-family="Arial">1) Clarify pain  2) Add proof  3) Ask for one action</text>
+  <rect x="140" y="440" width="920" height="160" rx="20" fill="#1e293b"/>
+  <text x="180" y="500" fill="#bae6fd" font-size="26" font-family="Arial">Reply prompt: "Want the framework? Reply THREAD."</text>
+  <text x="180" y="545" fill="#e2e8f0" font-size="22" font-family="Arial">Drives comments + algorithmic distribution</text>
+  <rect x="140" y="640" width="260" height="56" rx="28" fill="#2563eb"/>
+  <text x="210" y="676" fill="#ffffff" font-size="22" font-family="Arial" font-weight="700">Post Now</text>
+</svg>

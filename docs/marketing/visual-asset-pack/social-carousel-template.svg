@@ -1,0 +1,39 @@
+<svg width="1080" height="1350" viewBox="0 0 1080 1350" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="124" y1="84" x2="944" y2="1260" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1020"/>
+      <stop offset="1" stop-color="#17223B"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="212" y1="210" x2="820" y2="1044" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67E8F9"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1350" rx="40" fill="url(#bg)"/>
+  <circle cx="874" cy="230" r="210" fill="#67E8F9" opacity="0.16"/>
+  <circle cx="796" cy="1048" r="250" fill="#8B5CF6" opacity="0.15"/>
+  <rect x="72" y="76" width="936" height="1198" rx="32" stroke="rgba(255,255,255,0.12)"/>
+  <rect x="112" y="116" width="188" height="40" rx="20" fill="rgba(103,232,249,0.14)" stroke="rgba(103,232,249,0.32)"/>
+  <text x="206" y="141" text-anchor="middle" fill="#D9F7FC" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="1.4">CAROUSEL COVER</text>
+  <text x="112" y="254" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">Turn attention</text>
+  <text x="112" y="336" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">into clicks</text>
+  <text x="112" y="404" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="500">Replace this headline with a hook, framework, or offer promise that fits the post.</text>
+  <rect x="112" y="474" width="856" height="404" rx="30" fill="rgba(11,16,32,0.72)" stroke="rgba(255,255,255,0.10)"/>
+  <rect x="152" y="516" width="260" height="302" rx="24" fill="rgba(103,232,249,0.10)" stroke="rgba(103,232,249,0.28)"/>
+  <text x="184" y="566" fill="#67E8F9" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">SLIDE PREVIEW</text>
+  <text x="184" y="612" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800">Big idea</text>
+  <text x="184" y="652" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="500">One concept per card</text>
+  <text x="184" y="692" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="500">Short supporting line</text>
+  <text x="184" y="732" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="500">Keep readable at thumbnail</text>
+  <rect x="446" y="516" width="482" height="92" rx="22" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <text x="478" y="568" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Use this zone for proof, steps, or a mini before/after.</text>
+  <rect x="446" y="630" width="482" height="92" rx="22" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <text x="478" y="682" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Add 2-3 benefit bullets, not a dense paragraph.</text>
+  <rect x="446" y="744" width="482" height="74" rx="20" fill="url(#glow)"/>
+  <text x="687" y="790" text-anchor="middle" fill="#0B1020" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800">Final slide CTA or save cue</text>
+  <rect x="112" y="932" width="856" height="248" rx="28" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.10)"/>
+  <text x="152" y="988" fill="#F472B6" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">TEMPLATE NOTES</text>
+  <text x="152" y="1036" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">• Use one dominant hook and one dominant proof element.</text>
+  <text x="152" y="1082" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">• Keep text blocks short enough for mobile scanning.</text>
+  <text x="152" y="1128" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">• Match CTA to funnel stage: save, reply, click, or buy.</text>
+</svg>

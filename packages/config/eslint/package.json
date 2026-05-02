@@ -1,0 +1,7 @@
+{
+  "name": "@faceless/config-eslint",
+  "private": true,
+  "version": "0.1.0",
+  "type": "commonjs",
+  "main": "base.cjs"
+}

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Damian/.openclaw/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Damian\\.openclaw"
+    ]
+  }
+}

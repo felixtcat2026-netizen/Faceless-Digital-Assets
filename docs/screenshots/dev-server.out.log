@@ -1,0 +1,18 @@
+
+> faceless-digital-assets@0.1.0 dev C:\labs\Faceless Digital Assets
+> pnpm --filter @faceless/web dev
+
+
+> @faceless/web@0.1.0 dev C:\labs\Faceless Digital Assets\apps\web
+> vite
+
+Port 5173 is in use, trying another one...
+
+  [32m[1mVITE[22m v7.3.2[39m  [2mready in [0m[1m1399[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5174[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+C:\labs\Faceless Digital Assets\apps\web:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @faceless/web@0.1.0 dev: `vite`
+Exit status 3221225786
+ ELIFECYCLE  Command failed with exit code 3221225786.

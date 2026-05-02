@@ -1,0 +1,63 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="180" y1="120" x2="1360" y2="780" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1020"/>
+      <stop offset="1" stop-color="#121A2F"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="291" y1="193" x2="1221" y2="692" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67E8F9"/>
+      <stop offset="0.55" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#F472B6"/>
+    </linearGradient>
+    <filter id="blur" x="0" y="0" width="1600" height="900" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" rx="40" fill="url(#bg)"/>
+  <g opacity="0.65" filter="url(#blur)">
+    <circle cx="1230" cy="168" r="170" fill="#67E8F9"/>
+    <circle cx="1060" cy="704" r="190" fill="#8B5CF6"/>
+    <circle cx="1410" cy="640" r="120" fill="#F472B6"/>
+  </g>
+  <rect x="64" y="64" width="1472" height="772" rx="32" stroke="rgba(255,255,255,0.12)"/>
+  <rect x="96" y="104" width="196" height="42" rx="21" fill="rgba(103,232,249,0.14)" stroke="rgba(103,232,249,0.45)"/>
+  <text x="194" y="131" text-anchor="middle" fill="#D9F7FC" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="1.6">FACELESS DIGITAL ASSETS</text>
+  <text x="96" y="246" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="800">Launch digital products with</text>
+  <text x="96" y="332" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="800">a cleaner funnel and sharper assets</text>
+  <text x="96" y="398" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="500">Premium templates, conversion-ready messaging, and operating systems for faceless builders who need to ship faster.</text>
+  <g>
+    <rect x="96" y="460" width="252" height="64" rx="20" fill="url(#accent)"/>
+    <text x="222" y="501" text-anchor="middle" fill="#0B1020" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">Explore the catalog</text>
+  </g>
+  <g>
+    <rect x="380" y="460" width="218" height="64" rx="20" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="489" y="501" text-anchor="middle" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Get the free starter pack</text>
+  </g>
+  <g>
+    <rect x="904" y="136" width="552" height="628" rx="32" fill="rgba(11,16,32,0.72)" stroke="rgba(255,255,255,0.12)"/>
+    <rect x="952" y="184" width="456" height="92" rx="24" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+    <text x="984" y="226" fill="#67E8F9" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700">PRODUCT STACK</text>
+    <text x="984" y="254" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">Three assets. One cleaner growth system.</text>
+
+    <rect x="952" y="312" width="206" height="188" rx="24" fill="rgba(103,232,249,0.12)" stroke="rgba(103,232,249,0.35)"/>
+    <text x="980" y="352" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">Creator Launch Kit</text>
+    <text x="980" y="388" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500">Offer positioning</text>
+    <text x="980" y="416" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500">Pricing prompts</text>
+    <text x="980" y="444" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500">7-day sprint</text>
+
+    <rect x="1184" y="312" width="224" height="188" rx="24" fill="rgba(139,92,246,0.12)" stroke="rgba(139,92,246,0.36)"/>
+    <text x="1212" y="352" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">Carousel Copy Bundle</text>
+    <text x="1212" y="388" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500">Hook formulas</text>
+    <text x="1212" y="416" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500">Slide structures</text>
+    <text x="1212" y="444" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500">CTA endings</text>
+
+    <rect x="952" y="536" width="456" height="180" rx="28" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.10)"/>
+    <text x="984" y="578" fill="#34D399" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700">OPS VIEW</text>
+    <text x="984" y="612" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800">Notion Ops Dashboard</text>
+    <text x="984" y="648" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500">Plan launches, track follow-up, and keep recurring work from slipping.</text>
+    <rect x="1226" y="584" width="138" height="32" rx="16" fill="rgba(52,211,153,0.18)"/>
+    <text x="1295" y="605" text-anchor="middle" fill="#A7F3D0" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="700">Weekly review</text>
+    <rect x="1226" y="628" width="138" height="32" rx="16" fill="rgba(103,232,249,0.18)"/>
+    <text x="1295" y="649" text-anchor="middle" fill="#D9F7FC" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="700">Content pipeline</text>
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <rect width="1400" height="900" fill="#f8fafc"/>
+  <rect x="120" y="80" width="1160" height="740" rx="20" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="170" y="170" fill="#111827" font-size="52" font-family="Arial" font-weight="700">Before: text-heavy product page</text>
+  <text x="170" y="235" fill="#374151" font-size="30" font-family="Arial">Minimal hierarchy, no channel mockups, weaker CTA treatment.</text>
+  <rect x="170" y="290" width="1060" height="460" rx="14" fill="#f3f4f6" stroke="#e5e7eb"/>
+  <text x="210" y="360" fill="#1f2937" font-size="28" font-family="Arial">• Long paragraphs dominate the fold</text>
+  <text x="210" y="420" fill="#1f2937" font-size="28" font-family="Arial">• No social proof or visual product examples</text>
+  <text x="210" y="480" fill="#1f2937" font-size="28" font-family="Arial">• Product value proposition blended into generic layout</text>
+  <rect x="210" y="560" width="260" height="56" rx="28" fill="#6b7280"/>
+  <text x="278" y="596" fill="#ffffff" font-size="24" font-family="Arial" font-weight="700">Buy Now</text>
+</svg>
