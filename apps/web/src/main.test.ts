@@ -28,18 +28,28 @@ describe('resolveStorefrontRoute', () => {
 });
 
 describe('renderStorefront', () => {
-  it('renders the catalog skeleton', () => {
+  it('renders the home page with conversion-focused hero copy and CTAs', () => {
+    const html = renderStorefront('/');
+    expect(html).toContain('Launch a digital product people actually want without losing weeks to planning, writing, and setup.');
+    expect(html).toContain('Browse Assets Built to Convert');
+    expect(html).toContain('Get the Free Starter Pack');
+    expect(html).toContain('4.9/5 creator-rated templates');
+  });
+
+  it('renders the catalog skeleton with upgraded product teaser copy', () => {
     const html = renderStorefront('/catalog');
     expect(html).toContain('Product Catalog');
+    expect(html).toContain('Choose the fastest fix for your current bottleneck, strengthen the message, and move straight into checkout.');
     expect(html).toContain('Creator Launch Kit');
+    expect(html).toContain('Stop overthinking your first offer and launch a faceless product this week');
     expect(html).toContain('/product/creator-launch-kit');
   });
 
   it('renders the premium product detail redesign with channel previews', () => {
     const html = renderStorefront('/product/carousel-copy-bundle');
     expect(html).toContain('Carousel Copy Bundle');
-    expect(html).toContain('Skip the drafting spiral and ship conversion-minded carousel copy in minutes instead of hours.');
-    expect(html).toContain('Download the Copy Bundle');
+    expect(html).toContain('Stop burning hours on drafts that go nowhere and publish conversion-minded carousel copy the same day.');
+    expect(html).toContain('Download the Conversion Copy Bundle');
     expect(html).toContain('In-channel product preview examples');
     expect(html).toContain('/assets/mockups/instagram-carousel.svg');
     expect(html).toContain('/assets/mockups/twitter-thread.svg');
@@ -52,7 +62,7 @@ describe('renderStorefront', () => {
   it('renders the lead magnet opt-in copy', () => {
     const html = renderStorefront('/lead-magnet');
     expect(html).toContain('Get the Faceless Product Starter Pack');
-    expect(html).toContain('Send Me the Starter Pack');
+    expect(html).toContain('Send Me the Free Starter Pack');
     expect(html).toContain("What's your biggest blocker right now?");
     expect(html).toContain('data-lead-form');
   });

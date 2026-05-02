@@ -21,18 +21,18 @@ export const PRODUCT_CATALOG: CatalogProduct[] = [
     price: '$29',
     priceCents: 2900,
     currency: 'usd',
-    catalogTeaser: 'Launch a sellable faceless offer this week with plug-and-play positioning, pricing, and delivery assets.',
-    audience: 'first-time digital product builders who want a fast, low-overhead launch',
-    outcome: 'go from loose idea to live offer without building everything from scratch',
-    promise: 'Package your knowledge into a clean offer, publish it quickly, and start collecting real buying signals.',
-    implementationTime: 'Set up the core assets in one focused afternoon and refine from live feedback.',
+    catalogTeaser: 'Stop overthinking your first offer and launch a faceless product this week with positioning, pricing, and delivery assets that are ready to adapt.',
+    audience: 'first-time digital product builders who want the fastest path from idea to paid offer',
+    outcome: 'turn a rough concept into a checkout-ready offer without wasting another week building from scratch',
+    promise: 'Turn scattered notes into a clear offer people can understand, buy, and receive without the usual launch chaos.',
+    implementationTime: 'Block one focused afternoon to customize the assets, then tighten the offer with real buyer feedback.',
     whatYouGet: [
-      'Offer positioning worksheet, pricing prompts, and launch checklist',
-      'Landing page copy prompts and simple fulfillment handoff templates',
-      'Examples you can adapt for a first faceless product launch'
+      'Offer positioning worksheet, pricing prompts, and a launch checklist that removes blank-page friction',
+      'Landing page copy prompts and simple fulfillment handoff templates so you can sell without duct-taping the backend',
+      'Realistic examples you can adapt to publish your first faceless product faster'
     ],
-    bonus: 'Includes a quick-start sprint outline for your first 7 days.',
-    ctaLabel: 'Get the Launch Kit'
+    bonus: 'Includes a 7-day quick-start sprint so you know exactly what to ship next.',
+    ctaLabel: 'Get Instant Access to the Launch Kit'
   },
   {
     slug: 'carousel-copy-bundle',
@@ -40,18 +40,18 @@ export const PRODUCT_CATALOG: CatalogProduct[] = [
     price: '$19',
     priceCents: 1900,
     currency: 'usd',
-    catalogTeaser: 'Turn silent scrolling into clicks with ready-to-customize carousel hooks, slides, and CTA frameworks.',
-    audience: 'creators and operators who need faster content that still sounds persuasive',
-    outcome: 'publish sharper educational and promotional carousels without staring at a blank page',
-    promise: 'Skip the drafting spiral and ship conversion-minded carousel copy in minutes instead of hours.',
-    implementationTime: 'Customize a post angle, plug in your offer, and publish the same day.',
+    catalogTeaser: 'Turn passive scrolling into clicks, replies, and signups with ready-to-customize hooks, slide structures, and CTA frameworks.',
+    audience: 'creators and operators who need persuasive content fast without sounding templated',
+    outcome: 'publish sharper educational and promotional carousels that move readers toward a clear next step',
+    promise: 'Stop burning hours on drafts that go nowhere and publish conversion-minded carousel copy the same day.',
+    implementationTime: 'Pick a post angle, plug in your offer, and ship a stronger carousel in one sitting.',
     whatYouGet: [
-      'Hook formulas, body slide frameworks, and CTA endings for multiple post angles',
-      'Swipeable examples for promotion, authority building, and lead generation',
-      'Messaging structures built to move readers from curiosity to action'
+      'Hook formulas, body slide frameworks, and CTA endings for promotion, authority, and lead generation angles',
+      'Swipeable examples that help you move from idea to publishable draft in minutes',
+      'Messaging structures designed to pull readers from curiosity into clicks, replies, and opt-ins'
     ],
-    bonus: 'Includes extra CTA prompts for link clicks, replies, and lead magnet signups.',
-    ctaLabel: 'Download the Copy Bundle'
+    bonus: 'Includes extra CTA prompts for link clicks, replies, saves, and lead magnet signups.',
+    ctaLabel: 'Download the Conversion Copy Bundle'
   },
   {
     slug: 'notion-ops-dashboard',
@@ -59,18 +59,18 @@ export const PRODUCT_CATALOG: CatalogProduct[] = [
     price: '$39',
     priceCents: 3900,
     currency: 'usd',
-    catalogTeaser: 'Run launches, content, and fulfillment from one clean workspace instead of scattered tabs and spreadsheets.',
-    audience: 'solo operators who need a lightweight command center for recurring launches',
-    outcome: 'track ideas, production, sales follow-up, and weekly priorities in one place',
-    promise: 'Replace messy manual tracking with a simple system you can open daily and trust immediately.',
-    implementationTime: 'Duplicate the dashboard, connect your workflow, and start using it in under 30 minutes.',
+    catalogTeaser: 'Replace scattered tabs and forgotten follow-ups with one command center for launches, content, and fulfillment.',
+    audience: 'solo operators who need a lightweight system that keeps recurring launches from slipping',
+    outcome: 'see your ideas, production, sales follow-up, and weekly priorities in one place you will actually use',
+    promise: 'Trade messy manual tracking for a simple dashboard that helps you stay organized, responsive, and launch-ready.',
+    implementationTime: 'Duplicate the dashboard, map it to your workflow, and start running from it in under 30 minutes.',
     whatYouGet: [
-      'A ready-to-duplicate Notion workspace for launch planning and execution',
-      'Views for pipeline status, weekly cadence, and follow-up visibility',
-      'Simple SOP prompts that make handoffs and reviews easier to manage'
+      'A ready-to-duplicate Notion workspace for launch planning, execution, and fulfillment visibility',
+      'Views for pipeline status, weekly cadence, and follow-up so revenue tasks stop getting buried',
+      'Simple SOP prompts that make handoffs, reviews, and recurring launches easier to manage'
     ],
-    bonus: 'Includes a weekly review template to keep launches moving without extra admin.',
-    ctaLabel: 'Access the Ops Dashboard'
+    bonus: 'Includes a weekly review template to keep launches moving without adding admin overhead.',
+    ctaLabel: 'Access the Ops Dashboard Today'
   }
 ];
 

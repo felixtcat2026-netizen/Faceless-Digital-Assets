@@ -1,0 +1,40 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="102" x2="920" y2="1800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1020"/>
+      <stop offset="1" stop-color="#141E36"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="184" y1="240" x2="822" y2="1522" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67E8F9"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bg)"/>
+  <circle cx="878" cy="210" r="190" fill="#67E8F9" opacity="0.16"/>
+  <circle cx="258" cy="1552" r="280" fill="#8B5CF6" opacity="0.16"/>
+  <rect x="72" y="82" width="936" height="1756" rx="36" stroke="rgba(255,255,255,0.12)"/>
+  <rect x="112" y="132" width="208" height="42" rx="21" fill="rgba(139,92,246,0.18)" stroke="rgba(139,92,246,0.35)"/>
+  <text x="216" y="159" text-anchor="middle" fill="#F2E8FF" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="1.4">VERTICAL COVER</text>
+  <text x="112" y="334" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="88" font-weight="800">Show the</text>
+  <text x="112" y="432" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="88" font-weight="800">outcome fast</text>
+  <text x="112" y="514" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="500">Use this for reel covers, stories, short-form video title cards, and promo frames.</text>
+  <rect x="112" y="614" width="856" height="728" rx="34" fill="rgba(11,16,32,0.74)" stroke="rgba(255,255,255,0.10)"/>
+  <rect x="162" y="674" width="756" height="114" rx="28" fill="url(#accent)"/>
+  <text x="540" y="744" text-anchor="middle" fill="#0B1020" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">Headline, transformation, or CTA</text>
+  <rect x="162" y="830" width="356" height="420" rx="28" fill="rgba(103,232,249,0.10)" stroke="rgba(103,232,249,0.28)"/>
+  <text x="198" y="886" fill="#67E8F9" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700">PREVIEW PANEL</text>
+  <text x="198" y="940" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800">Insert UI,</text>
+  <text x="198" y="980" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800">checklist, or</text>
+  <text x="198" y="1020" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800">carousel card</text>
+  <text x="198" y="1080" fill="#B6C2D9" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="500">Keep it simple enough to read in under 1 second.</text>
+  <rect x="556" y="830" width="362" height="132" rx="24" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <text x="590" y="888" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Bullet 1: key deliverable</text>
+  <rect x="556" y="986" width="362" height="132" rx="24" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <text x="590" y="1044" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Bullet 2: time saved</text>
+  <rect x="556" y="1142" width="362" height="108" rx="24" fill="rgba(244,114,182,0.14)" stroke="rgba(244,114,182,0.28)"/>
+  <text x="590" y="1204" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Bullet 3: CTA / next step</text>
+  <rect x="112" y="1416" width="856" height="262" rx="30" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.10)"/>
+  <text x="156" y="1482" fill="#34D399" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700">SAFE-AREA REMINDER</text>
+  <text x="156" y="1542" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Keep critical text above the bottom 220px and inside side margins for story UI overlays.</text>
+  <text x="156" y="1598" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Use strong contrast and one message only.</text>
+</svg>

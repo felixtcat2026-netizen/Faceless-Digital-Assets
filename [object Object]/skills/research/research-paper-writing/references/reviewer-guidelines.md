@@ -1,4 +1,4 @@
-# Reviewer Guidelines & Evaluation Criteria
++# Reviewer Guidelines & Evaluation Criteria
 
 This reference documents how reviewers evaluate papers at major ML/AI conferences, helping authors anticipate and address reviewer concerns.
 
@@ -24,12 +24,14 @@ All major ML conferences assess papers across four core dimensions:
 ### 1. Quality (Technical Soundness)
 
 **What reviewers ask:**
+
 - Are claims well-supported by theoretical analysis or experimental results?
 - Are the proofs correct? Are the experiments properly controlled?
 - Are baselines appropriate and fairly compared?
 - Is the methodology sound?
 
 **How to ensure high quality:**
+
 - Include complete proofs (main paper or appendix with sketches)
 - Use appropriate baselines (not strawmen)
 - Report variance/error bars with methodology
@@ -38,12 +40,14 @@ All major ML conferences assess papers across four core dimensions:
 ### 2. Clarity (Writing & Organization)
 
 **What reviewers ask:**
+
 - Is the paper clearly written and well organized?
 - Can an expert in the field reproduce the results?
 - Is notation consistent? Are terms defined?
 - Is the paper self-contained?
 
 **How to ensure clarity:**
+
 - Use consistent terminology throughout
 - Define all notation at first use
 - Include reproducibility details (appendix acceptable)
@@ -52,12 +56,14 @@ All major ML conferences assess papers across four core dimensions:
 ### 3. Significance (Impact & Importance)
 
 **What reviewers ask:**
+
 - Are the results impactful for the community?
 - Will others build upon this work?
 - Does it address an important problem?
 - What is the potential for real-world impact?
 
 **How to demonstrate significance:**
+
 - Clearly articulate the problem's importance
 - Connect to broader research themes
 - Discuss potential applications
@@ -66,11 +72,13 @@ All major ML conferences assess papers across four core dimensions:
 ### 4. Originality (Novelty & Contribution)
 
 **What reviewers ask:**
+
 - Does this provide new insights?
 - How does it differ from prior work?
 - Is the contribution non-trivial?
 
 **Key insight from NeurIPS guidelines:**
+
 > "Originality does not necessarily require introducing an entirely new method. Papers that provide novel insights from evaluating existing approaches or shed light on why methods succeed can also be highly original."
 
 ---
@@ -79,14 +87,14 @@ All major ML conferences assess papers across four core dimensions:
 
 ### Scoring System (1-6 Scale)
 
-| Score | Label | Description |
-|-------|-------|-------------|
-| **6** | Strong Accept | Groundbreaking, flawless work; top 2-3% of submissions |
-| **5** | Accept | Technically solid, high impact; would benefit the community |
-| **4** | Borderline Accept | Solid work with limited evaluation; leans accept |
-| **3** | Borderline Reject | Solid but weaknesses outweigh strengths; leans reject |
-| **2** | Reject | Technical flaws or weak evaluation |
-| **1** | Strong Reject | Well-known results or unaddressed ethics concerns |
+| Score | Label             | Description                                                 |
+| ----- | ----------------- | ----------------------------------------------------------- |
+| **6** | Strong Accept     | Groundbreaking, flawless work; top 2-3% of submissions      |
+| **5** | Accept            | Technically solid, high impact; would benefit the community |
+| **4** | Borderline Accept | Solid work with limited evaluation; leans accept            |
+| **3** | Borderline Reject | Solid but weaknesses outweigh strengths; leans reject       |
+| **2** | Reject            | Technical flaws or weak evaluation                          |
+| **1** | Strong Reject     | Well-known results or unaddressed ethics concerns           |
 
 ### Reviewer Instructions
 
@@ -134,6 +142,7 @@ ICML reviewers provide:
 ### Scoring Guidelines
 
 ICML uses a similar 1-6 scale with calibration:
+
 - Top 25% of accepted papers: Score 5-6
 - Typical accepted paper: Score 4-5
 - Borderline: Score 3-4
@@ -153,6 +162,7 @@ ICML uses a similar 1-6 scale with calibration:
 ### OpenReview Process
 
 ICLR uses OpenReview with:
+
 - Public reviews (after acceptance decisions)
 - Author responses visible to reviewers
 - Discussion between reviewers and ACs
@@ -160,6 +170,7 @@ ICLR uses OpenReview with:
 ### Scoring
 
 ICLR reviews include:
+
 - **Soundness**: 1-4 scale
 - **Presentation**: 1-4 scale
 - **Contribution**: 1-4 scale
@@ -187,6 +198,7 @@ ACL adds NLP-specific evaluation:
 ### Limitations Section
 
 ACL specifically requires a Limitations section. Reviewers check:
+
 - Are limitations honest and comprehensive?
 - Do limitations undermine core claims?
 - Are potential negative impacts addressed?
@@ -194,6 +206,7 @@ ACL specifically requires a Limitations section. Reviewers check:
 ### Ethics Review
 
 ACL has a dedicated ethics review process for:
+
 - Dual-use concerns
 - Data privacy issues
 - Bias and fairness implications
@@ -206,13 +219,13 @@ ACL has a dedicated ethics review process for:
 
 AAAI reviewers evaluate along similar axes to NeurIPS/ICML but with some differences:
 
-| Criterion | Weight | Notes |
-|-----------|--------|-------|
-| **Technical quality** | High | Soundness of approach, correctness of results |
-| **Significance** | High | Importance of the problem and contribution |
-| **Novelty** | Medium-High | New ideas, methods, or insights |
-| **Clarity** | Medium | Clear writing, well-organized presentation |
-| **Reproducibility** | Medium | Sufficient detail to reproduce results |
+| Criterion             | Weight      | Notes                                         |
+| --------------------- | ----------- | --------------------------------------------- |
+| **Technical quality** | High        | Soundness of approach, correctness of results |
+| **Significance**      | High        | Importance of the problem and contribution    |
+| **Novelty**           | Medium-High | New ideas, methods, or insights               |
+| **Clarity**           | Medium      | Clear writing, well-organized presentation    |
+| **Reproducibility**   | Medium      | Sufficient detail to reproduce results        |
 
 ### AAAI-Specific Considerations
 
@@ -238,13 +251,13 @@ AAAI reviewers evaluate along similar axes to NeurIPS/ICML but with some differe
 
 COLM reviews focus on relevance to language modeling in addition to standard criteria:
 
-| Criterion | Weight | Notes |
-|-----------|--------|-------|
-| **Relevance** | High | Must be relevant to language modeling community |
-| **Technical quality** | High | Sound methodology, well-supported claims |
-| **Novelty** | Medium-High | New insights about language models |
-| **Clarity** | Medium | Clear presentation, reproducible |
-| **Significance** | Medium-High | Impact on LM research and practice |
+| Criterion             | Weight      | Notes                                           |
+| --------------------- | ----------- | ----------------------------------------------- |
+| **Relevance**         | High        | Must be relevant to language modeling community |
+| **Technical quality** | High        | Sound methodology, well-supported claims        |
+| **Novelty**           | Medium-High | New insights about language models              |
+| **Clarity**           | Medium      | Clear presentation, reproducible                |
+| **Significance**      | Medium-High | Impact on LM research and practice              |
 
 ### COLM-Specific Considerations
 
@@ -256,6 +269,7 @@ COLM reviews focus on relevance to language modeling in addition to standard cri
 ### Scoring
 
 COLM uses an ICLR-style scoring system:
+
 - **8-10**: Strong accept (top papers)
 - **6-7**: Weak accept (solid contribution)
 - **5**: Borderline
@@ -278,6 +292,7 @@ Good reviewers follow these principles:
 ### Review Structure Best Practices
 
 **Strong Review Structure:**
+
 ```
 Summary (1 paragraph):
 - What the paper does
@@ -310,37 +325,37 @@ Overall Assessment:
 
 ### Technical Concerns
 
-| Concern | How to Pre-empt |
-|---------|-----------------|
-| "Baselines too weak" | Use state-of-the-art baselines, cite recent work |
-| "Missing ablations" | Include systematic ablation study |
-| "No error bars" | Report std dev/error, multiple runs |
-| "Hyperparameters not tuned" | Document tuning process, search ranges |
-| "Claims not supported" | Ensure every claim has evidence |
+| Concern                     | How to Pre-empt                                  |
+| --------------------------- | ------------------------------------------------ |
+| "Baselines too weak"        | Use state-of-the-art baselines, cite recent work |
+| "Missing ablations"         | Include systematic ablation study                |
+| "No error bars"             | Report std dev/error, multiple runs              |
+| "Hyperparameters not tuned" | Document tuning process, search ranges           |
+| "Claims not supported"      | Ensure every claim has evidence                  |
 
 ### Novelty Concerns
 
-| Concern | How to Pre-empt |
-|---------|-----------------|
-| "Incremental contribution" | Clearly articulate what's new vs prior work |
-| "Similar to [paper X]" | Explicitly compare to X in Related Work |
-| "Straightforward extension" | Highlight non-obvious aspects |
+| Concern                     | How to Pre-empt                             |
+| --------------------------- | ------------------------------------------- |
+| "Incremental contribution"  | Clearly articulate what's new vs prior work |
+| "Similar to [paper X]"      | Explicitly compare to X in Related Work     |
+| "Straightforward extension" | Highlight non-obvious aspects               |
 
 ### Clarity Concerns
 
-| Concern | How to Pre-empt |
-|---------|-----------------|
-| "Hard to follow" | Use clear structure, signposting |
+| Concern                 | How to Pre-empt                            |
+| ----------------------- | ------------------------------------------ |
+| "Hard to follow"        | Use clear structure, signposting           |
 | "Notation inconsistent" | Review all notation, create notation table |
-| "Missing details" | Include reproducibility appendix |
-| "Figures unclear" | Self-contained captions, proper sizing |
+| "Missing details"       | Include reproducibility appendix           |
+| "Figures unclear"       | Self-contained captions, proper sizing     |
 
 ### Significance Concerns
 
-| Concern | How to Pre-empt |
-|---------|-----------------|
-| "Limited impact" | Discuss broader implications |
-| "Narrow evaluation" | Evaluate on multiple benchmarks |
+| Concern                            | How to Pre-empt                               |
+| ---------------------------------- | --------------------------------------------- |
+| "Limited impact"                   | Discuss broader implications                  |
+| "Narrow evaluation"                | Evaluate on multiple benchmarks               |
 | "Only works in restricted setting" | Acknowledge scope, explain why still valuable |
 
 ---
@@ -350,6 +365,7 @@ Overall Assessment:
 ### Rebuttal Best Practices
 
 **Do:**
+
 - Thank reviewers for their time
 - Address each concern specifically
 - Provide evidence (new experiments if possible)
@@ -357,6 +373,7 @@ Overall Assessment:
 - Acknowledge valid criticisms
 
 **Don't:**
+
 - Be defensive or dismissive
 - Make promises you can't keep
 - Ignore difficult criticisms
@@ -381,7 +398,9 @@ We thank the reviewers for their thoughtful feedback.
 ...
 
 ## Summary of Changes
+
 If accepted, we will:
+
 1. [Specific change]
 2. [Specific change]
 3. [Specific change]
@@ -390,6 +409,7 @@ If accepted, we will:
 ### When to Accept Criticism
 
 Some reviewer feedback should simply be accepted:
+
 - Valid technical errors
 - Missing important related work
 - Unclear explanations
@@ -400,6 +420,7 @@ Acknowledge these gracefully: "The reviewer is correct that... We will revise to
 ### When to Push Back
 
 You can respectfully disagree when:
+
 - Reviewer misunderstood the paper
 - Requested experiments are out of scope
 - Criticism is factually incorrect
@@ -413,21 +434,25 @@ Frame disagreements constructively: "We appreciate this perspective. However, [e
 Before submitting, ask yourself:
 
 **Quality:**
+
 - [ ] Would I trust these results if I saw them?
 - [ ] Are all claims supported by evidence?
 - [ ] Are baselines fair and recent?
 
 **Clarity:**
+
 - [ ] Can someone reproduce this from the paper?
 - [ ] Is the writing clear to non-experts in this subfield?
 - [ ] Are all terms and notation defined?
 
 **Significance:**
+
 - [ ] Why should the community care about this?
 - [ ] What can people do with this work?
 - [ ] Is the problem important?
 
 **Originality:**
+
 - [ ] What specifically is new here?
 - [ ] How does this differ from closest related work?
 - [ ] Is the contribution non-trivial?

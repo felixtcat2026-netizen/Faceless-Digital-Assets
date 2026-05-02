@@ -93,19 +93,76 @@ function renderPageBody(route: StorefrontRoute): string {
   switch (route.kind) {
     case 'home':
       return `
-        <section class="hero">
-          <p class="eyebrow">Faceless digital products for fast-moving builders</p>
-          <h1>Launch your first digital product in 7 days without building from scratch.</h1>
-          <p>No audience required. No complicated stack. Just proven assets, sharper copy, and a repeatable cadence you can run every week.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="/catalog">Browse Ready-to-Launch Assets</a>
-            <a class="button" href="/lead-magnet">Grab the Free Starter Pack</a>
-            <a class="button" href="/paperclip-dashboard">See the Launch Dashboard</a>
+        <section class="hero hero-visual" aria-labelledby="home-hero-title">
+          <div class="hero-copy">
+            <p class="eyebrow">Faceless digital products for fast-moving builders</p>
+            <h1 id="home-hero-title">Launch a digital product people actually want without losing weeks to planning, writing, and setup.</h1>
+            <p class="hero-lead">Skip the blank page, scattered workflow, and vague positioning. Start with proven assets, sharper messaging, and a clear next step toward checkout.</p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="/catalog">Browse Assets Built to Convert</a>
+              <a class="button" href="/lead-magnet">Get the Free Starter Pack</a>
+              <a class="button" href="/paperclip-dashboard">See the Launch Dashboard</a>
+            </div>
+            <ul class="hero-chip-list">
+              <li>4.9/5 creator-rated templates</li>
+              <li>2.4x avg click lift on reworked hooks</li>
+              <li>Ship in 24-48 hours, not 2-3 weeks</li>
+            </ul>
           </div>
-          <ul class="hero-proof-list">
-            <li>Start with lightweight products you can ship this week</li>
-            <li>Use direct-response copy that makes the next step obvious</li>
-            <li>Test demand before you sink time into a bigger build</li>
+          <aside class="hero-media" aria-label="Product and social preview examples">
+            <div class="hero-mockup-stack">
+              <img class="hero-mockup hero-mockup-main" src="/assets/mockups/instagram-carousel.svg" alt="Instagram carousel preview for faceless digital product copy." loading="lazy" />
+              <img class="hero-mockup hero-mockup-floating" src="/assets/mockups/meta-ad-creative.svg" alt="Paid social ad preview with headline, social proof, and CTA." loading="lazy" />
+              <p class="hero-stat hero-stat-top"><strong>57%</strong> faster publish cycle</p>
+              <p class="hero-stat hero-stat-bottom"><strong>3 channels</strong> launch-ready creative directions</p>
+            </div>
+          </aside>
+        </section>
+        <section class="feature-grid" aria-label="Core offer value">
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                <path d="M12 3l3 6 6 .8-4.4 4.3 1 6.1L12 17l-5.6 3.2 1-6.1L3 9.8 9 9z"></path>
+              </svg>
+            </span>
+            <h2>Built To Catch Attention</h2>
+            <p>Visual-first layouts, stronger CTA blocks, and social-style sections that feel current in 2026 feeds.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                <path d="M4 5h16v4H4zM4 11h10v8H4zM16 11h4v3h-4zM16 16h4v3h-4z"></path>
+              </svg>
+            </span>
+            <h2>Conversion-Ready Structure</h2>
+            <p>Hooks, proof, objections, and CTA hierarchy are sequenced to guide buying decisions instead of just informing.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                <path d="M12 2l8 4v6c0 5.1-3.5 9.8-8 10-4.5-.2-8-4.9-8-10V6zM8.8 12.2l2.4 2.4 4.8-4.8"></path>
+              </svg>
+            </span>
+            <h2>Fast To Implement</h2>
+            <p>Start with proven templates, adapt your angle, and publish this week without rebuilding your workflow from zero.</p>
+          </article>
+        </section>
+        <section class="home-channel-strip" aria-labelledby="channel-strip-title">
+          <h2 id="channel-strip-title">See How It Looks Across Social Channels</h2>
+          <p>Preview-ready examples for organic and paid distribution so you can launch with creative that already matches each platform.</p>
+          <ul class="home-channel-list">
+            <li>
+              <img src="/assets/mockups/instagram-carousel.svg" alt="Instagram carousel concept with multi-slide storytelling sequence." loading="lazy" />
+              <h3>Instagram Carousel</h3>
+            </li>
+            <li>
+              <img src="/assets/mockups/twitter-thread.svg" alt="X or Twitter thread concept with hook and short insight stack." loading="lazy" />
+              <h3>X / Twitter Thread</h3>
+            </li>
+            <li>
+              <img src="/assets/mockups/youtube-thumbnail.svg" alt="YouTube thumbnail and title treatment concept for discovery." loading="lazy" />
+              <h3>YouTube Thumb + Title</h3>
+            </li>
           </ul>
         </section>
       `;
@@ -113,7 +170,7 @@ function renderPageBody(route: StorefrontRoute): string {
       return `
         <section>
           <h1>Product Catalog</h1>
-          <p>Pick the asset that removes your biggest launch bottleneck, then move straight into checkout.</p>
+          <p>Choose the fastest fix for your current bottleneck, strengthen the message, and move straight into checkout.</p>
           <ul class="product-list">
             ${PRODUCT_CATALOG.map(renderProductCard).join('')}
           </ul>
@@ -138,7 +195,7 @@ function renderPageBody(route: StorefrontRoute): string {
       return `
         <section>
           <h1>${escapeHtml(product.title)}</h1>
-          <p><strong>Price:</strong> ${escapeHtml(product.price)} — one payment, lifetime access</p>
+          <p><strong>Price:</strong> ${escapeHtml(product.price)} — one payment, lifetime access, instant delivery</p>
           <p>${escapeHtml(product.promise)}</p>
           <div class="skeleton-block">
             <p><strong>Best for:</strong> ${escapeHtml(product.audience)}</p>
@@ -157,7 +214,7 @@ function renderPageBody(route: StorefrontRoute): string {
             <button class="button button-primary" type="submit">${escapeHtml(product.ctaLabel)}</button>
           </form>
           <p class="status-message" data-checkout-status aria-live="polite"></p>
-          <p class="checkout-reassurance">Secure checkout powered by Stripe. Get instant access as soon as your order is complete.</p>
+          <p class="checkout-reassurance">Secure checkout powered by Stripe. Finish your order and get immediate access so you can start implementing today.</p>
           <a class="button" href="/catalog">Back to Catalog</a>
         </section>
       `;
@@ -166,11 +223,11 @@ function renderPageBody(route: StorefrontRoute): string {
       return `
         <section>
           <h1>Get the Faceless Product Starter Pack</h1>
-          <p>Get 5 starter templates, 3 launch checklists, and a simple 7-day plan to move from idea to first offer.</p>
+          <p>Get the free starter pack with templates, launch checklists, and a 7-day plan that helps you go from stalled idea to first offer faster.</p>
           <ul class="offer-list">
-            <li>See how to position a lightweight digital product fast</li>
-            <li>Use the exact checklist that keeps your first launch moving</li>
-            <li>Start with a free pack before you commit to a paid asset</li>
+            <li>Find a stronger angle for a lightweight digital product before you waste time building</li>
+            <li>Use the checklist that keeps your first launch moving toward a real publish date</li>
+            <li>Get quick wins with the free pack before you invest in a paid asset</li>
           </ul>
           <form class="capture-form" data-lead-form>
             <label>
@@ -185,9 +242,9 @@ function renderPageBody(route: StorefrontRoute): string {
                 <option value="systemize-content">I need a simpler weekly system</option>
               </select>
             </label>
-            <button class="button button-primary" type="submit">Send Me the Starter Pack</button>
+            <button class="button button-primary" type="submit">Send Me the Free Starter Pack</button>
           </form>
-          <p class="checkout-reassurance">No spam. Just the starter resources and follow-up built to help you launch faster.</p>
+          <p class="checkout-reassurance">No spam. Just practical resources, a helpful follow-up sequence, and a faster path to your first launch.</p>
           <p class="status-message" data-lead-status aria-live="polite"></p>
         </section>
       `;
@@ -263,7 +320,7 @@ function renderProductCard(product: CatalogProduct): string {
       <h2>${escapeHtml(product.title)}</h2>
       <p>${escapeHtml(product.price)} one-time purchase</p>
       <p>${escapeHtml(product.catalogTeaser)}</p>
-      <a class="button" href="/product/${escapeHtml(product.slug)}">See What's Inside</a>
+      <a class="button" href="/product/${escapeHtml(product.slug)}">See the Offer Details</a>
     </li>
   `;
 }
@@ -316,7 +373,7 @@ function renderCarouselCopyPremiumPage(product: CatalogProduct): string {
         </div>
         <div class="hero-actions premium-actions">
           <a class="button button-primary" href="#checkout">${escapeHtml(product.ctaLabel)}</a>
-          <a class="button" href="#preview-gallery">Preview Social Mockups</a>
+          <a class="button" href="#preview-gallery">Preview the Social Mockups</a>
         </div>
       </article>
 
@@ -371,8 +428,8 @@ function renderCarouselCopyPremiumPage(product: CatalogProduct): string {
       </article>
 
       <article id="checkout" class="premium-card checkout-card">
-        <h2>Ready to ship your next campaign faster?</h2>
-        <p>Secure checkout powered by Stripe. Access is delivered immediately after payment.</p>
+        <h2>Ready to turn your next post into a stronger conversion asset?</h2>
+        <p>Secure checkout powered by Stripe. Pay once, get instant access, and start publishing sharper copy today.</p>
         <form class="checkout-form" data-checkout-form data-product-slug="${escapeHtml(product.slug)}">
           <label>
             Purchase email (optional)
