@@ -14,6 +14,17 @@ dist/
 # Local runtime/debug artifacts
 tmp-*
 tmp-cpuprofile/
+tmp_*
+.tmp_*
+*_probe.txt
+*_probe[0-9].txt
+issue_*.json
+nul
+6}
+
+# Hermes / Paperclip agent runtime artifacts
+.hermes/
+.paperclip/
 
 # Local VS Code config
 .vscode/launch.json
